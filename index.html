@@ -1,0 +1,2012 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Matsu RallyCon v0.8.57 モード選択</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--line:#30363d;--text:#f0f6fc;--muted:#8b949e;--accent:#58a6ff;--warn:#f2cc60}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans JP",sans-serif;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+button{font:inherit;color:inherit;background:#21262d;border:1px solid #484f58;border-radius:8px;font-weight:800;touch-action:manipulation;min-width:0}button:active{transform:translateY(1px)}
+#app{width:100vw;height:100dvh;display:grid;grid-template-rows:44px minmax(0,1fr) 54px;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.top{display:grid;grid-template-columns:minmax(150px,1fr) minmax(110px,auto) auto auto auto;gap:7px;align-items:center;padding:5px 10px;border-bottom:1px solid var(--line);background:#11161d;min-width:0;position:relative}.brand{font-size:14px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brandVersion{display:none}.status{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}.top button{height:34px;min-width:48px;padding:0 12px}.clock{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:baseline;gap:8px;white-space:nowrap;pointer-events:none;font-variant-numeric:tabular-nums;text-align:center}.clockTime{font-size:22px;font-weight:900;line-height:1}
+.main{display:grid;grid-template-columns:20% 60% 20%;min-width:0;min-height:0}.panel{background:var(--panel);padding:7px;min-width:0;min-height:0}.left{display:grid;grid-template-rows:minmax(0,1.18fr) minmax(0,1.18fr) minmax(0,.78fr);gap:6px;border-right:1px solid var(--line);overflow:hidden}.card{border:1px solid var(--line);border-radius:9px;background:#0f141a;padding:6px 8px;min-width:0;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden}.card .value{min-height:0;align-self:center}.card.compact .value{align-self:center}.label{font-size:11px;color:var(--muted);font-weight:800;line-height:1.1}.value{font-size:clamp(30px,5.8vh,46px);font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:clip;align-self:center}.small{font-size:clamp(21px,4.2vh,31px)}
+.totalValue{font-size:clamp(44px,7.5vh,66px)}.card:first-child{container-type:inline-size}.totalValue.threeDigit{font-size:clamp(38px,16cqw,52px)}
+.corr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:4px}.corr button{height:24px;font-size:10px;padding:0 2px}.corrLabel{font-size:9px;color:var(--muted);font-weight:800;display:none}
+.center{min-width:0;min-height:0;position:relative;background:#20262e;display:grid;grid-template-rows:minmax(0,1fr);border-right:1px solid var(--line)}.stage{position:relative;min-width:0;min-height:0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;display:flex;align-items:flex-start;justify-content:center}.canvasWrap{position:relative;flex:none;transform-origin:center center;will-change:transform}.canvasWrap canvas{display:block;background:#fff;box-shadow:0 0 16px rgba(0,0,0,.5);max-width:none}.hidden{display:none!important}
+.right{border-left:0;display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto;gap:6px;overflow:hidden}.rbhead{display:grid;grid-template-columns:.72fr 1.28fr;gap:6px}.rbbox{border:1px solid var(--line);border-radius:9px;padding:7px 9px;background:#0f141a;min-width:0;min-height:0}.rbnum{font-size:11px;color:var(--muted);font-weight:800}.rbval{font-size:28px;font-weight:900;line-height:1.05;white-space:nowrap;overflow:hidden}.nextbox{min-height:72px}.nextbox .rbval{font-size:clamp(32px,5.7vh,43px)}.timebox{min-height:72px;display:grid;grid-template-rows:auto minmax(0,1fr)}.timebox .rbval{font-size:clamp(21px,4.2vh,31px);align-self:center}.rightSpacer{min-height:0}.gpsCorrBox{margin-top:0}.gpsCorr{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;gap:5px;align-items:center;margin-top:5px}.gpsCorr button{height:34px;font-size:18px;padding:0}.gpsCorr .rbval{font-size:24px;text-align:center;overflow:visible}.gpsCorrBox{display:none}.gpsCorrModal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.62);padding:20px}.gpsCorrModal.open{display:flex}.gpsCorrDialog{width:min(360px,86vw);border:1px solid var(--line);border-radius:12px;background:#0f141a;box-shadow:0 12px 40px rgba(0,0,0,.55);padding:16px}.gpsCorrTitle{font-size:16px;color:var(--muted);font-weight:800;text-align:center}.gpsCorrModalValue{font-size:48px;font-weight:900;line-height:1.05;text-align:center;font-variant-numeric:tabular-nums;margin:14px 0}.gpsCorrModalControls{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gpsCorrModalControls button{height:48px;font-size:22px}.gpsCorrClose{width:100%;height:42px;margin-top:10px;font-size:14px}.pdfStepModal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.62);padding:20px}.pdfStepModal.open{display:flex}.pdfStepDialog{width:min(380px,88vw);border:1px solid var(--line);border-radius:12px;background:#0f141a;box-shadow:0 12px 40px rgba(0,0,0,.55);padding:16px}.pdfStepTitle{font-size:16px;color:var(--muted);font-weight:800;text-align:center}.pdfStepValue{font-size:44px;font-weight:900;line-height:1.05;text-align:center;font-variant-numeric:tabular-nums;margin:12px 0}.pdfStepControls{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pdfStepControls button{height:48px;font-size:22px}.pdfStepHint{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}.portraitPdfStepBox{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.portraitPdfStepTitle{font-size:12px;color:var(--muted);font-weight:800;text-align:center;line-height:1.4}.portraitPdfStepTitle span{font-size:10px;font-weight:600}.portraitPdfStepValue{font-size:32px;font-weight:900;line-height:1.05;text-align:center;font-variant-numeric:tabular-nums;margin:7px 0}.portraitPdfStepControls{display:grid;grid-template-columns:1fr 1fr;gap:8px}.portraitPdfStepControls button{height:42px;font-size:18px}.portraitPdfStepHint{font-size:10px;color:var(--muted);text-align:center;margin-top:7px;line-height:1.45}.pdfStepClose{width:100%;height:42px;margin-top:10px;font-size:14px}.pdfStepInputModal{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.72);padding:20px}.pdfStepInputModal.open{display:flex}.pdfStepInputDialog{width:min(360px,88vw);border:1px solid var(--line);border-radius:12px;background:#0f141a;box-shadow:0 12px 40px rgba(0,0,0,.65);padding:16px}.pdfStepInputTitle{font-size:16px;color:var(--muted);font-weight:800;text-align:center}.pdfStepInput{width:100%;box-sizing:border-box;height:56px;margin:14px 0 8px;text-align:center;font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;border:1px solid var(--line);border-radius:9px;background:#11161d;color:var(--text);outline:none}.pdfStepInputHint{font-size:11px;color:var(--muted);text-align:center;line-height:1.5}.pdfStepInputControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.pdfStepInputControls button{height:46px;font-size:16px}.pdfStepInputCancel{width:100%;height:42px;margin-top:8px;font-size:14px}.pdfLoadModal{position:fixed;inset:0;z-index:1100;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.68);padding:20px}.pdfLoadModal.open{display:flex}.pdfLoadDialog{width:min(440px,90vw);border:1px solid var(--line);border-radius:12px;background:#0f141a;box-shadow:0 12px 40px rgba(0,0,0,.6);padding:18px}.pdfLoadTitle{font-size:18px;color:var(--text);font-weight:900;text-align:center}.pdfLoadName{font-size:12px;color:var(--muted);text-align:center;margin:8px 0 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pdfLoadOptions{display:grid;grid-template-columns:1fr;gap:8px}.pdfLoadOptions button{min-height:52px;font-size:15px;font-weight:800}.pdfLoadHint{font-size:11px;color:var(--muted);text-align:left;margin-top:12px;line-height:1.5}.pdfLoadCancel{width:100%;height:42px;margin-top:10px;font-size:14px}.nav{display:grid;grid-template-columns:1fr 1fr;gap:6px}.nav button{height:40px}.auto{grid-column:1/-1;height:46px;font-size:14px}.reverseBtn{font-size:14px;font-weight:900}.reverseBtn.active{border-color:#e0a400;background:#5a4300;color:#fff}.nav{grid-template-columns:minmax(0,1fr) 78px;grid-template-rows:18px 42px;gap:4px;position:relative;top:-5px}.nav .reverseInfo{grid-column:1/-1;grid-row:1;display:none;border:0;background:transparent;padding:0 3px;min-height:18px;height:18px;line-height:18px;text-align:right;white-space:nowrap;overflow:hidden}.nav .reverseInfo.open{display:block}.nav .reverseInfo .rbnum{font-size:9px;font-weight:800;margin-right:5px}.nav .reverseInfo .rbval{font-size:12px;font-weight:900;line-height:18px;font-variant-numeric:tabular-nums;vertical-align:middle}.nav #autoBtn{grid-column:1;grid-row:2;height:42px}.nav #reverseBtn{grid-column:2;grid-row:2;height:42px}.foot{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;padding:3px 8px;background:#11161d;border-top:1px solid var(--line)}.foot button{min-width:0;height:32px;font-size:10px}.file{display:none}
+@media (max-width:1100px){.value{font-size:clamp(26px,5.3vh,40px)}.totalValue{font-size:clamp(44px,7.5vh,66px)}.card:first-child{container-type:inline-size}.totalValue.threeDigit{font-size:clamp(38px,16cqw,52px)}.card:nth-child(2) .value{font-size:clamp(29px,5.0vh,38px)}.small{font-size:clamp(20px,4.2vh,29px)}.corr button,.resetOnly button{font-size:11px}.pdfname{font-size:11px}.rbval{font-size:25px}.nextbox .rbval{font-size:clamp(29px,5.0vh,38px)}.timebox .rbval{font-size:clamp(20px,4.2vh,29px)}.foot button{font-size:10px;height:30px}}
+@media (orientation:portrait){#app{grid-template-rows:46px minmax(0,1fr) 58px}.main{grid-template-columns:1fr}.left,.right{display:none}.center{border-right:0}.top{grid-template-columns:minmax(0,1fr) auto auto auto}.status{display:none}.foot{grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr}.foot button{height:27px;font-size:11px}}
+@media (orientation:portrait){.brandVersion{display:none}.brand{font-size:13px}}
+/* v0.8.33: portrait PDF-reading controls use LOAD/STOP on the left and
+   large two-row BACK/NEXT controls on the right; PAGE buttons are unnecessary
+   because the PDF is presented as one continuous slide. */
+@media (orientation:portrait){
+  body.portraitPdfMode .foot{grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;grid-auto-flow:row;gap:5px;padding:4px 8px}
+  body.portraitPdfMode .foot #pagePrev,
+  body.portraitPdfMode .foot #pageNext{display:none!important}
+  body.portraitPdfMode .foot #loadBtn{grid-column:1;grid-row:1;height:100%;font-size:14px}
+  body.portraitPdfMode .foot #startBtn{grid-column:1;grid-row:2;height:100%;font-size:14px}
+  body.portraitPdfMode .foot #backBtn{grid-column:2;grid-row:1 / span 2;height:100%;font-size:18px}
+  body.portraitPdfMode .foot #nextBtn{grid-column:3;grid-row:1 / span 2;height:100%;font-size:18px}
+}
+
+
+/* v0.6.18: right navigation fully visible above footer */
+.right{grid-template-rows:auto auto auto minmax(0,1fr) auto;gap:5px;padding-bottom:3px}
+.nav{gap:4px;grid-template-columns:minmax(0,1fr) 78px;grid-template-rows:18px 42px}
+.nav button{height:42px}
+.auto{grid-column:1;grid-row:2;height:42px}
+.reverseBtn{grid-column:2;grid-row:2;height:42px}
+
+/* v0.6.29: preserve 60% PDF area; reclaim only internal side-panel space */
+.panel{padding:5px}
+.left{gap:5px}
+.card{padding:5px 6px}
+.corr{gap:4px;margin-top:3px}
+.corr button{white-space:nowrap;font-size:9px;padding:0 1px}
+.rbhead{grid-template-columns:.60fr 1.40fr}
+.rbhead .rbbox:first-child{container-type:inline-size;padding-left:5px;padding-right:5px}
+.rbhead .rbbox:first-child .rbval{font-size:clamp(16px,35cqw,24px);letter-spacing:-.2px}.rbhead .rbbox:first-child .rbval.threeDigit{font-size:15px;letter-spacing:-.5px}
+/* v0.7.1: LEG / SPEED / NEXT numeric values unified and slightly enlarged for real-world visibility. */
+.card:first-child,.card:nth-child(2){container-type:inline-size}
+.totalValue.threeDigit{font-size:clamp(34px,13.5cqw,47px);letter-spacing:-1px;text-align:center;width:100%}
+.card:nth-child(2) .value,.card.compact .value,.nextbox .rbval{font-size:clamp(36px,6.2vh,50px);text-align:center;letter-spacing:-.5px;width:100%;padding-right:0}
+.rbhead .rbbox{overflow:hidden}
+.rbhead .rbbox .rbval{min-width:0;max-width:100%;overflow:hidden;text-overflow:clip;font-variant-numeric:tabular-nums}
+.rbhead .rbbox:first-child .rbval{font-size:clamp(15px,27cqw,21px);letter-spacing:-.55px;text-align:center;width:100%;padding:0}
+.rbhead .rbbox:first-child .rbval.threeDigit{font-size:13px;letter-spacing:-.8px;display:block;overflow:visible;line-height:1.05;white-space:nowrap}
+.rbhead .rbbox:nth-child(2) .rbval{font-size:clamp(20px,5.0cqw,25px);letter-spacing:-.8px;text-align:center;width:100%;padding:0}
+.nextbox .rbval{font-variant-numeric:tabular-nums;letter-spacing:-.5px;text-align:center;width:100%}
+.card .value{text-align:center;width:100%}
+.timebox .rbval{font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+@media (max-width:1100px){.card:nth-child(2) .value,.card.compact .value,.nextbox .rbval{font-size:clamp(34px,5.8vh,46px)}}
+
+/* v0.8.19: isolated A5 portrait RALLY VIEW.
+   This layer is presentation-only. The existing #stage/#canvasWrap/#pdfCanvas remain
+   mounted and untouched, which keeps the v0.8.13 core navigation and START path intact. */
+.portraitRallyView{display:none;position:absolute;inset:0;z-index:30;background:#20262e;overflow:hidden}
+.portraitRallyView.active{display:block}
+.portraitRallyScroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;background:#20262e}
+.portraitRallyStack{width:100%;padding:66px 0 26px;display:flex;flex-direction:column;align-items:center}
+/* v0.8.32: portrait PDF-reading mode uses the unused upper HUD area and
+   lets the first PDF page finish at the bottom of the display area. */
+.portraitRallyView.fallbackMode .portraitRallyStack{padding-top:0;padding-bottom:0}
+.portraitRallyView.fallbackMode .portraitRallyHud{grid-template-columns:1fr 1fr;gap:7px;top:8px;left:8px;right:8px}
+.portraitRallyView.fallbackMode .portraitRallyHudBox{min-height:108px;padding:8px 10px;display:grid;grid-template-rows:auto minmax(0,1fr);align-items:center}
+.portraitRallyView.fallbackMode .portraitRallyHudLabel{font-size:13px;line-height:1.1}
+.portraitRallyView.fallbackMode .portraitRallyHudValue{font-size:clamp(48px,9vw,70px);line-height:1;font-variant-numeric:tabular-nums}
+.portraitRallyView.fallbackMode .portraitRallyHud .rb{display:none}
+.portraitRallyPage{width:100%;position:relative;flex:none;line-height:0;background:#fff}
+.portraitRallyPage canvas{display:block;width:100%;height:auto;background:#fff}
+.portraitRallyPage + .portraitRallyPage{border-top:2px solid #20262e}
+.portraitRallyHud{position:absolute;top:7px;left:7px;right:7px;z-index:2;display:grid;grid-template-columns:1.4fr .8fr .55fr;gap:5px;pointer-events:none}
+.portraitRallyHudBox{min-width:0;border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:4px 7px;background:rgba(13,17,23,.92);box-shadow:0 3px 12px rgba(0,0,0,.34);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}.portraitRallyHud #portraitTotalBox{pointer-events:auto;touch-action:none}
+.portraitRallyHudLabel{font-size:9px;color:#8b949e;font-weight:800;line-height:1.1}
+.portraitRallyHudValue{font-size:clamp(22px,6.2vw,31px);font-weight:900;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:clip;font-variant-numeric:tabular-nums;text-align:center}
+.portraitRallyHud .rb .portraitRallyHudValue{font-size:clamp(18px,5.2vw,27px)}
+.portraitRallyLoading{position:absolute;inset:0;z-index:4;display:none;align-items:center;justify-content:center;background:#20262e;color:#8b949e;font-size:14px;font-weight:800}
+.portraitRallyLoading.show{display:flex}
+@media (orientation:landscape){.portraitRallyView{display:none!important}}
+@media (orientation:portrait){.portraitRallyView.active .portraitRallyStack{padding-bottom:calc(26px + env(safe-area-inset-bottom))}}
+
+.emptyRoadbook{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center;color:#c9d1d9;background:#20262e;z-index:2}.emptyRoadbookTitle{font-size:clamp(22px,3.5vw,34px);font-weight:900;letter-spacing:.04em}.emptyRoadbookText{font-size:clamp(15px,2.2vw,20px);font-weight:800}.emptyRoadbookHint{font-size:clamp(12px,1.6vw,15px);color:#8b949e}
+
+/* v0.8.57: app-level mode selection; kept separate from the existing PDF parser mode. */
+.appModeModal{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.82)}
+.appModeModal.open{display:flex}
+.appModeDialog{width:min(440px,94vw);max-height:92dvh;overflow:auto;padding:22px;border:1px solid #484f58;border-radius:16px;background:#11161d;box-shadow:0 18px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:13px}
+.appModeTitle{text-align:center;font-size:25px;font-weight:900}.appModeSub{text-align:center;color:#8b949e;font-size:12px;font-weight:800;letter-spacing:.12em}
+.appModeChoice{min-height:78px;padding:13px 15px;text-align:left;display:flex;flex-direction:column;justify-content:center;gap:7px;border-color:#484f58;background:#20262e}
+.appModeChoice strong{font-size:17px}.appModeChoice span{font-size:12px;color:#b1bac4;font-weight:500}
+#chooseRallyMode{border-color:#3987c9}.rallyOrientationChoice{display:flex;flex-direction:column;gap:9px}.rallyOrientationChoice[hidden]{display:none}.orientationButtons{display:grid;grid-template-columns:1fr 1fr;gap:9px}.orientationButtons button{height:54px;background:#263b50;border-color:#3987c9;font-size:16px}
+.appModeCancel{height:38px;background:transparent;color:#8b949e;border-color:#30363d}
+#modeBtn{height:30px;min-width:48px;padding:0 7px;font-size:10px}
+body.pdfViewAppMode .left,body.pdfViewAppMode .right{display:none!important}
+body.pdfViewAppMode .main{grid-template-columns:1fr!important}
+body.pdfViewAppMode .center{border:0}
+body.pdfViewAppMode #gpsBtn,body.pdfViewAppMode #compassBtn,body.pdfViewAppMode #startBtn{display:none!important}
+body.pdfViewAppMode .foot{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+body.pdfViewAppMode .foot button{font-size:11px}
+body.pdfViewAppMode .top{grid-template-columns:minmax(0,1fr) auto auto!important}
+body.pdfViewAppMode .status{display:block!important}
+</style></head><body>
+<div id="app">
+<header class="top"><div class="brand">Matsu RallyCon <span class="brandVersion">v0.8.57 MODE SELECT</span></div><div class="clock"><span id="clockTime" class="clockTime">--:--</span></div><div id="status" class="status">準備中</div><button id="modeBtn" title="モード変更">MODE</button><button id="gpsBtn">GPS</button><button id="compassBtn">CAP</button></header>
+<main class="main">
+<section class="panel left">
+<div class="card"><div class="label">TOTAL km</div><div id="total" class="value totalValue">0.00</div><div class="corr"><button id="totalMinus">−10m</button><button id="totalZero">0</button><button id="totalPlus">＋10m</button></div></div>
+<div class="card"><div class="label">LEG km</div><div id="leg" class="value">0.00</div><div class="corr"><button id="legMinus">−10m</button><button id="legZero">0</button><button id="legPlus">＋10m</button></div></div>
+<div class="card compact"><div class="label">SPEED km/h</div><div id="speed" class="value">0</div></div>
+
+</section>
+<section class="center">
+<div id="stage" class="stage"><div id="emptyRoadbook" class="emptyRoadbook"><div class="emptyRoadbookTitle">Matsu RallyCon</div><div class="emptyRoadbookText">コマ図PDFは読み込まれていません</div><div class="emptyRoadbookHint">下の「LOAD PDF」からPDFを選択してください</div></div><div id="canvasWrap" class="canvasWrap"><canvas id="pdfCanvas"></canvas></div>
+<div id="portraitRallyView" class="portraitRallyView" aria-hidden="true">
+  <div id="portraitRallyScroll" class="portraitRallyScroll">
+    <div id="portraitRallyStack" class="portraitRallyStack"></div>
+  </div>
+  <div class="portraitRallyHud">
+    <div id="portraitTotalBox" class="portraitRallyHudBox"><div class="portraitRallyHudLabel">TOTAL km</div><div id="portraitTotal" class="portraitRallyHudValue">0.00</div></div>
+    <div class="portraitRallyHudBox"><div class="portraitRallyHudLabel">SPEED km/h</div><div id="portraitSpeed" class="portraitRallyHudValue">0</div></div>
+    <div class="portraitRallyHudBox rb"><div class="portraitRallyHudLabel">RB</div><div id="portraitRb" class="portraitRallyHudValue">1</div></div>
+  </div>
+  <div id="portraitRallyLoading" class="portraitRallyLoading">A5 RALLY VIEW 読み込み中…</div>
+</div></div>
+</section>
+<aside class="panel right">
+<div class="rbhead"><div class="rbbox"><div class="rbnum">RB</div><div id="rbNo" class="rbval">1</div></div><div class="rbbox"><div class="rbnum">TARGET km</div><div id="target" class="rbval">0.00</div></div></div>
+<div class="rbbox nextbox"><div class="rbnum">NEXTまで</div><div id="remain" class="rbval">0.00</div></div>
+<div class="rbbox timebox"><div class="rbnum">TIME</div><div id="time" class="rbval">00:00:00</div></div>
+<div class="rightSpacer"><div class="rbbox gpsCorrBox"><div class="rbnum">GPS距離補正</div><div class="gpsCorr"><button id="gpsCorrMinus">−</button><div id="gpsCorrValue" class="rbval">100%</div><button id="gpsCorrPlus">＋</button></div></div></div>
+<div class="nav"><div id="reverseInfo" class="rbbox reverseInfo"><span class="rbnum">REV 戻り距離</span><span id="reverseDistance" class="rbval">−0.00</span></div><button id="autoBtn" class="auto">AUTO: ON</button><button id="reverseBtn" class="reverseBtn">REV</button></div>
+</aside></main>
+<div id="gpsCorrModal" class="gpsCorrModal" aria-hidden="true"><div class="gpsCorrDialog"><div class="gpsCorrTitle">GPS距離補正</div><div id="gpsCorrModalValue" class="gpsCorrModalValue">100.0%</div><div class="gpsCorrModalControls"><button id="gpsCorrModalMinus">−0.1%</button><button id="gpsCorrModalPlus">＋0.1%</button></div><button id="gpsCorrClose" class="gpsCorrClose">閉じる</button></div></div><div id="pdfStepModal" class="pdfStepModal" aria-hidden="true"><div class="pdfStepDialog"><div class="pdfStepTitle">PDFコマ送り量</div><div id="pdfStepModalValue" class="pdfStepValue" title="長押しで数値入力">100.0%</div><div class="pdfStepControls"><button id="pdfStepModalMinus">−0.1%</button><button id="pdfStepModalPlus">＋0.1%</button></div><div class="pdfStepHint">NEXT：次へ　BACK：前へ<br>1回の送り量＝現在の表示エリア高さ × 設定倍率<br>スワイプ：PDFを任意の位置へ自由に移動</div><div class="portraitPdfStepBox"><div class="portraitPdfStepTitle">縦RALLY VIEW 送り補正 <span>(縦画面のPDF表示モードのみ)</span></div><div id="portraitPdfStepCorrectionValue" class="portraitPdfStepValue">100.0%</div><div class="portraitPdfStepControls"><button id="portraitPdfStepCorrectionMinus">−0.1%</button><button id="portraitPdfStepCorrectionPlus">＋0.1%</button></div><div class="portraitPdfStepHint">表示値20.0%のまま、実際の縦送り幅だけ微調整します。<br>80.0～110.0%・0.1%刻み / 長押しで連続調整</div></div><button id="pdfStepClose" class="pdfStepClose">閉じる</button></div></div><div id="pdfStepInputModal" class="pdfStepInputModal" aria-hidden="true"><div class="pdfStepInputDialog"><div class="pdfStepInputTitle">PDFコマ送り量を直接入力</div><input id="pdfStepInput" class="pdfStepInput" type="number" inputmode="decimal" min="20" max="200" step="0.1" autocomplete="off" aria-label="PDFコマ送り量"><div class="pdfStepInputHint">20.0～200.0%・0.1%刻み<br>例：87.3</div><div class="pdfStepInputControls"><button id="pdfStepInputApply">設定</button><button id="pdfStepInputCancel">キャンセル</button></div></div></div><div id="pdfLoadModal" class="pdfLoadModal" aria-hidden="true"><div class="pdfLoadDialog"><div class="pdfLoadTitle">PDF読み込みモード</div><div id="pdfLoadName" class="pdfLoadName"></div><div class="pdfLoadOptions"><button id="pdfLoadAuto">自動判定</button><button id="pdfLoadKoma">コマ練モード</button><button id="pdfLoadView">PDF表示モード</button></div><div class="pdfLoadHint">自動判定：対応形式だけ距離/RBを解析。未知形式はPDF表示。<br>コマ練：対応するコマ練形式として解析。非対応形式は読み込みません。<br>PDF表示：距離/RBを一切解析せず、固定送り＋自由スクロールで表示。</div><button id="pdfLoadCancel" class="pdfLoadCancel">キャンセル</button></div></div><footer class="foot"><button id="loadBtn">LOAD PDF</button><button id="pagePrev">PAGE ‹</button><button id="pageNext">PAGE ›</button><button id="startBtn">START</button><button id="backBtn">BACK</button><button id="nextBtn">NEXT</button></footer>
+<div id="appModeModal" class="appModeModal" aria-hidden="true">
+  <div class="appModeDialog">
+    <div class="appModeTitle">Matsu RallyCon</div>
+    <div class="appModeSub">SELECT MODE</div>
+    <button id="chooseRallyMode" class="appModeChoice"><strong>RALLYCON MODE</strong><span>GPS距離計測・TOTAL・LEG・RB・NEXT</span></button>
+    <div id="rallyOrientationChoice" class="rallyOrientationChoice" hidden>
+      <div class="appModeSub">画面方向を選択</div>
+      <div class="orientationButtons"><button id="choosePortrait">縦画面</button><button id="chooseLandscape">横画面</button></div>
+    </div>
+    <button id="choosePdfViewMode" class="appModeChoice"><strong>PDF VIEW MODE</strong><span>PDF閲覧専用・GPS/走行計測なし</span></button>
+    <button id="cancelAppMode" class="appModeCancel">キャンセル</button>
+  </div>
+</div>
+<input id="pdfFile" class="file" type="file" accept="application/pdf,.pdf">
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+/* A5 KomaRen parser DEV: coordinate-based extraction via PDF.js text spans. */
+const A5_NUM_RE=/(?<![\d.])(\d+(?:\.\d+)?)(?![\d.])/g;
+const A5_INT_RE=/^\d+$/;
+function a5ItemBox(item,pageHeight){
+  const t=item.transform||[];
+  const x=Number(t[4])||0;
+  const d=Math.abs(Number(t[3])||0);
+  const f=Number(t[5])||0;
+  const yTop=pageHeight-(f+d);
+  return {text:String(item.str||'').replace(/\s+/g,' ').trim(),x,yTop,y:yTop+d/2,w:Number(item.width)||0,h:d};
+}
+function a5Nums(items){
+  const out=[];
+  for(const it of items){
+    const text=it.text;
+    if(!text)continue;
+    for(const m of text.matchAll(A5_NUM_RE)){
+      const token=m[1];
+      const start=m.index||0;
+      const end=start+m[0].length;
+      out.push({...it,text:token,rawText:text,before:text.slice(0,start).trim(),after:text.slice(end).trim(),number:Number(token),hasDecimal:token.includes('.')});
+    }
+  }
+  return out;
+}
+function a5Nearest(y,centers,tol){
+  let bi=-1,bd=Infinity;
+  for(let i=0;i<centers.length;i++){const d=Math.abs(y-centers[i]);if(d<bd){bd=d;bi=i;}}
+  return bd<=tol?bi:null;
+}
+function a5UniqueBySlot(candidates,label,pageNo){
+  const out={};
+  for(const x of candidates){
+    const slot=x.slot;
+    if(slot==null)continue;
+    if(!out[slot]){out[slot]=x;continue;}
+    const old=out[slot];
+    // Prefer a decimal candidate over an integer candidate. If both are
+    // decimal values, ambiguity is a hard parse error rather than guessing.
+    if(x.hasDecimal!==old.hasDecimal){if(x.hasDecimal)out[slot]=x;continue;}
+    throw new Error(`A5 page ${pageNo} row ${slot+1}: duplicate ${label}`);
+  }
+  return out;
+}
+async function parseA5Page(page,pageNo){
+  const vp=page.getViewport({scale:1,rotation:page.rotate||0});
+  const tc=await page.getTextContent({normalizeWhitespace:false,disableCombineTextItems:false});
+  const items=tc.items.map(x=>a5ItemBox(x,vp.height));
+  const nums=a5Nums(items);
+
+  // RB numbers are the strongest row anchors in the left margin.
+  const rb=nums.filter(x=>x.x<50 && A5_INT_RE.test(x.text) && x.y>90);
+  rb.sort((a,b)=>a.y-b.y);
+  if(rb.length!==6)return null;
+  const rbCenters=rb.map(x=>x.y);
+  for(let i=1;i<rb.length;i++){
+    if(rb[i].y-rb[i-1].y<40)throw new Error(`A5 page ${pageNo}: RB row spacing is implausible`);
+  }
+
+  // KM-INTER is in the inner-left column and aligns vertically with its RB row.
+  const interCandidates=[];
+  for(const x of nums){
+    // This roadbook shifts wide INTER values slightly left (x=79.7pt).
+    // Use the row alignment, not a rigid x>=80 cutoff, to identify INTER.
+    if(x.x>=25 && x.x<170){
+      const slot=a5Nearest(x.y,rbCenters,12);
+      if(slot!==null)interCandidates.push({...x,slot});
+    }
+  }
+  const interBySlot=a5UniqueBySlot(interCandidates,'INTER',pageNo);
+  if(Object.keys(interBySlot).length!==6)throw new Error(`A5 page ${pageNo}: INTER ${Object.keys(interBySlot).length}/6`);
+
+  // KM-TOTAL is above the corresponding RB/INTER row. Comments can be in
+  // the same PDF span (e.g. "350.38 Pudding Point"), so a numeric prefix or
+  // embedded numeric token is accepted. The geometric relationship to the
+  // RB anchor is what identifies it as TOTAL.
+  const totalCenters=rbCenters.map(y=>y-41.0);
+  const totalCandidates=[];
+  for(const x of nums){
+    if(x.x<80 && x.y>35){
+      const slot=a5Nearest(x.y,totalCenters,16);
+      if(slot!==null){
+        // Never reuse the RB anchor itself as TOTAL.
+        if(Math.abs(x.y-rbCenters[slot])<12)continue;
+        totalCandidates.push({...x,slot});
+      }
+    }
+  }
+  const totalBySlot=a5UniqueBySlot(totalCandidates,'TOTAL',pageNo);
+
+  const rows=[];
+  for(let slot=0;slot<6;slot++){
+    const total=totalBySlot[slot];
+    const inter=interBySlot[slot];
+    // KomaRen A5's six roadbook rows occupy this stable table area. Keep the
+    // physical row-centre ratio in the parsed route so rendering can center
+    // the actual row without relying on RB text baseline.
+    // Use the actual RB text anchor so organizer-specific row spacing is preserved.
+    const rowCenterRatio=rb[slot].y/vp.height;
+    const r={
+      no:Number(rb[slot].text),
+      dist:total?Number(total.text):null,
+      inter:Number(inter.text),
+      page:pageNo-1,
+      logicalPage:pageNo-1,
+      side:'full',
+      pdfPage:pageNo,
+      row:slot+1,
+      rowCenterRatio,
+      total_source:total?'pdf':'derived'
+    };
+    if(total?.after)r.comment=total.after;
+    rows.push(r);
+  }
+  return rows;
+}
+async function parseA5Pdf(pdfDoc){
+  const rows=[];
+  const parsedPages=[];
+  for(let pageNo=2;pageNo<=pdfDoc.numPages;pageNo++){
+    const page=await pdfDoc.getPage(pageNo);
+    const parsed=await parseA5Page(page,pageNo);
+    if(!parsed)break;
+    parsedPages.push(pageNo);
+    rows.push(...parsed);
+  }
+  if(!rows.length)throw new Error('A5 parser: no roadbook pages found');
+
+  // Do not sort away page/row order before validating it. A roadbook must be
+  // sequential both within a page and across pages.
+  for(let i=0;i<rows.length;i++){
+    const expectedNo=i+1;
+    if(rows[i].no!==expectedNo)throw new Error(`A5 parser: RB sequence mismatch at row ${i+1} (got ${rows[i].no}, expected ${expectedNo})`);
+    if(rows[i].row!==((i%6)+1))throw new Error(`A5 parser: row position mismatch at RB ${rows[i].no}`);
+    if(rows[i].pdfPage!==2+Math.floor(i/6))throw new Error(`A5 parser: page mapping mismatch at RB ${rows[i].no}`);
+  }
+
+  const errors=[];let prev=0;
+  for(const r of rows){
+    if(!Number.isFinite(r.inter)||r.inter<0)throw new Error(`A5 parser: invalid INTER at RB ${r.no}`);
+    const expectedTotal=Number((prev+r.inter).toFixed(2));
+    if(r.dist==null){r.dist=expectedTotal;r.total_source='derived';}
+    else if(!Number.isFinite(r.dist)||r.dist<0)throw new Error(`A5 parser: invalid TOTAL at RB ${r.no}`);
+    else if(Math.abs(r.dist-expectedTotal)>0.011)errors.push({rb:r.no,expected:expectedTotal,pdfTotal:r.dist});
+    if(r.dist+1e-9<prev)throw new Error(`A5 parser: TOTAL decreased at RB ${r.no}`);
+    prev=r.dist;
+  }
+  if(errors.length)throw new Error('A5 parser: cumulative TOTAL mismatch at RB '+errors.map(x=>x.rb).join(','));
+
+  const meta={
+    format:'A5',source:'loaded PDF',pages_total:pdfDoc.numPages,
+    roadbook_pages:parsedPages.length,rows:rows.length,
+    first_total:rows[0].dist,last_total:rows.at(-1).dist,
+    derived_total_count:rows.filter(r=>r.total_source==='derived').length
+  };
+  return {route:rows,meta};
+}
+</script>
+<script>
+const A4_ROUTE=[{"no":1,"dist":0.0,"inter":0.0,"page":1,"logicalPage":1,"side":"right","pdfPage":1},{"no":2,"dist":2.65,"inter":2.65,"page":1,"logicalPage":1,"side":"right","pdfPage":1},{"no":3,"dist":4.48,"inter":1.83,"page":1,"logicalPage":1,"side":"right","pdfPage":1},{"no":4,"dist":8.06,"inter":3.58,"page":1,"logicalPage":1,"side":"right","pdfPage":1},{"no":5,"dist":14.61,"inter":6.55,"page":1,"logicalPage":1,"side":"right","pdfPage":1},{"no":6,"dist":17.83,"inter":3.22,"page":1,"logicalPage":1,"side":"right","pdfPage":1},{"no":7,"dist":18.78,"inter":0.95,"page":2,"logicalPage":2,"side":"left","pdfPage":2},{"no":8,"dist":19.12,"inter":0.34,"page":2,"logicalPage":2,"side":"left","pdfPage":2},{"no":9,"dist":19.52,"inter":0.4,"page":2,"logicalPage":2,"side":"left","pdfPage":2},{"no":10,"dist":20.05,"inter":0.53,"page":2,"logicalPage":2,"side":"left","pdfPage":2},{"no":11,"dist":20.67,"inter":0.62,"page":2,"logicalPage":2,"side":"left","pdfPage":2},{"no":12,"dist":20.77,"inter":0.1,"page":2,"logicalPage":2,"side":"left","pdfPage":2},{"no":13,"dist":22.24,"inter":1.47,"page":2,"logicalPage":3,"side":"right","pdfPage":2},{"no":14,"dist":22.68,"inter":0.44,"page":2,"logicalPage":3,"side":"right","pdfPage":2},{"no":15,"dist":23.07,"inter":0.39,"page":2,"logicalPage":3,"side":"right","pdfPage":2},{"no":16,"dist":32.05,"inter":8.98,"page":2,"logicalPage":3,"side":"right","pdfPage":2},{"no":17,"dist":33.0,"inter":0.95,"page":2,"logicalPage":3,"side":"right","pdfPage":2},{"no":18,"dist":34.85,"inter":1.85,"page":2,"logicalPage":3,"side":"right","pdfPage":2},{"no":19,"dist":35.2,"inter":0.35,"page":3,"logicalPage":4,"side":"left","pdfPage":3},{"no":20,"dist":36.39,"inter":1.19,"page":3,"logicalPage":4,"side":"left","pdfPage":3},{"no":21,"dist":39.03,"inter":2.64,"page":3,"logicalPage":4,"side":"left","pdfPage":3},{"no":22,"dist":39.36,"inter":0.33,"page":3,"logicalPage":4,"side":"left","pdfPage":3},{"no":23,"dist":42.57,"inter":3.21,"page":3,"logicalPage":4,"side":"left","pdfPage":3},{"no":24,"dist":43.26,"inter":0.69,"page":3,"logicalPage":4,"side":"left","pdfPage":3},{"no":25,"dist":43.58,"inter":0.32,"page":3,"logicalPage":5,"side":"right","pdfPage":3},{"no":26,"dist":45.03,"inter":1.45,"page":3,"logicalPage":5,"side":"right","pdfPage":3},{"no":27,"dist":45.74,"inter":0.71,"page":3,"logicalPage":5,"side":"right","pdfPage":3},{"no":28,"dist":46.36,"inter":0.62,"page":3,"logicalPage":5,"side":"right","pdfPage":3},{"no":29,"dist":46.47,"inter":0.11,"page":3,"logicalPage":5,"side":"right","pdfPage":3},{"no":30,"dist":46.86,"inter":0.39,"page":3,"logicalPage":5,"side":"right","pdfPage":3},{"no":31,"dist":47.35,"inter":0.49,"page":4,"logicalPage":6,"side":"left","pdfPage":4},{"no":32,"dist":48.02,"inter":0.67,"page":4,"logicalPage":6,"side":"left","pdfPage":4},{"no":33,"dist":49.02,"inter":1.0,"page":4,"logicalPage":6,"side":"left","pdfPage":4},{"no":34,"dist":49.34,"inter":0.32,"page":4,"logicalPage":6,"side":"left","pdfPage":4},{"no":35,"dist":49.92,"inter":0.58,"page":4,"logicalPage":6,"side":"left","pdfPage":4},{"no":36,"dist":50.04,"inter":0.12,"page":4,"logicalPage":6,"side":"left","pdfPage":4},{"no":37,"dist":50.38,"inter":0.34,"page":4,"logicalPage":7,"side":"right","pdfPage":4},{"no":38,"dist":50.96,"inter":0.58,"page":4,"logicalPage":7,"side":"right","pdfPage":4},{"no":39,"dist":52.55,"inter":1.59,"page":4,"logicalPage":7,"side":"right","pdfPage":4},{"no":40,"dist":53.93,"inter":1.38,"page":4,"logicalPage":7,"side":"right","pdfPage":4},{"no":41,"dist":54.9,"inter":0.97,"page":4,"logicalPage":7,"side":"right","pdfPage":4},{"no":42,"dist":55.77,"inter":0.87,"page":4,"logicalPage":7,"side":"right","pdfPage":4},{"no":43,"dist":55.87,"inter":0.1,"page":5,"logicalPage":8,"side":"left","pdfPage":5},{"no":44,"dist":56.21,"inter":0.34,"page":5,"logicalPage":8,"side":"left","pdfPage":5},{"no":45,"dist":58.37,"inter":2.16,"page":5,"logicalPage":8,"side":"left","pdfPage":5},{"no":46,"dist":58.48,"inter":0.11,"page":5,"logicalPage":8,"side":"left","pdfPage":5},{"no":47,"dist":59.55,"inter":1.07,"page":5,"logicalPage":8,"side":"left","pdfPage":5},{"no":48,"dist":60.62,"inter":1.07,"page":5,"logicalPage":8,"side":"left","pdfPage":5},{"no":49,"dist":60.78,"inter":0.16,"page":5,"logicalPage":9,"side":"right","pdfPage":5},{"no":50,"dist":60.88,"inter":0.1,"page":5,"logicalPage":9,"side":"right","pdfPage":5},{"no":51,"dist":61.33,"inter":0.45,"page":5,"logicalPage":9,"side":"right","pdfPage":5},{"no":52,"dist":61.45,"inter":0.12,"page":5,"logicalPage":9,"side":"right","pdfPage":5},{"no":53,"dist":62.14,"inter":0.69,"page":5,"logicalPage":9,"side":"right","pdfPage":5},{"no":54,"dist":62.63,"inter":0.49,"page":5,"logicalPage":9,"side":"right","pdfPage":5},{"no":55,"dist":63.44,"inter":0.81,"page":6,"logicalPage":10,"side":"left","pdfPage":6},{"no":56,"dist":64.34,"inter":0.9,"page":6,"logicalPage":10,"side":"left","pdfPage":6},{"no":57,"dist":64.67,"inter":0.33,"page":6,"logicalPage":10,"side":"left","pdfPage":6},{"no":58,"dist":65.24,"inter":0.57,"page":6,"logicalPage":10,"side":"left","pdfPage":6},{"no":59,"dist":67.2,"inter":1.96,"page":6,"logicalPage":10,"side":"left","pdfPage":6},{"no":60,"dist":69.32,"inter":2.12,"page":6,"logicalPage":10,"side":"left","pdfPage":6},{"no":61,"dist":70.63,"inter":1.31,"page":6,"logicalPage":11,"side":"right","pdfPage":6},{"no":62,"dist":71.41,"inter":0.78,"page":6,"logicalPage":11,"side":"right","pdfPage":6},{"no":63,"dist":71.88,"inter":0.47,"page":6,"logicalPage":11,"side":"right","pdfPage":6},{"no":64,"dist":72.21,"inter":0.33,"page":6,"logicalPage":11,"side":"right","pdfPage":6},{"no":65,"dist":73.04,"inter":0.83,"page":6,"logicalPage":11,"side":"right","pdfPage":6},{"no":66,"dist":73.31,"inter":0.27,"page":6,"logicalPage":11,"side":"right","pdfPage":6},{"no":67,"dist":73.89,"inter":0.58,"page":7,"logicalPage":12,"side":"left","pdfPage":7},{"no":68,"dist":74.27,"inter":0.38,"page":7,"logicalPage":12,"side":"left","pdfPage":7},{"no":69,"dist":77.03,"inter":2.76,"page":7,"logicalPage":12,"side":"left","pdfPage":7},{"no":70,"dist":79.98,"inter":2.95,"page":7,"logicalPage":12,"side":"left","pdfPage":7},{"no":71,"dist":80.76,"inter":0.78,"page":7,"logicalPage":12,"side":"left","pdfPage":7},{"no":72,"dist":81.28,"inter":0.52,"page":7,"logicalPage":12,"side":"left","pdfPage":7},{"no":73,"dist":82.68,"inter":1.4,"page":7,"logicalPage":13,"side":"right","pdfPage":7},{"no":74,"dist":83.24,"inter":0.56,"page":7,"logicalPage":13,"side":"right","pdfPage":7},{"no":75,"dist":85.62,"inter":2.38,"page":7,"logicalPage":13,"side":"right","pdfPage":7},{"no":76,"dist":86.57,"inter":0.95,"page":7,"logicalPage":13,"side":"right","pdfPage":7},{"no":77,"dist":89.01,"inter":2.44,"page":7,"logicalPage":13,"side":"right","pdfPage":7},{"no":78,"dist":90.87,"inter":1.86,"page":7,"logicalPage":13,"side":"right","pdfPage":7},{"no":79,"dist":91.61,"inter":0.74,"page":8,"logicalPage":14,"side":"left","pdfPage":8},{"no":80,"dist":91.99,"inter":0.38,"page":8,"logicalPage":14,"side":"left","pdfPage":8},{"no":81,"dist":92.46,"inter":0.47,"page":8,"logicalPage":14,"side":"left","pdfPage":8},{"no":82,"dist":92.94,"inter":0.48,"page":8,"logicalPage":14,"side":"left","pdfPage":8},{"no":83,"dist":93.43,"inter":0.49,"page":8,"logicalPage":14,"side":"left","pdfPage":8},{"no":84,"dist":93.67,"inter":0.24,"page":8,"logicalPage":14,"side":"left","pdfPage":8},{"no":85,"dist":94.56,"inter":0.89,"page":8,"logicalPage":15,"side":"right","pdfPage":8},{"no":86,"dist":95.09,"inter":0.53,"page":8,"logicalPage":15,"side":"right","pdfPage":8},{"no":87,"dist":95.94,"inter":0.85,"page":8,"logicalPage":15,"side":"right","pdfPage":8},{"no":88,"dist":96.05,"inter":0.11,"page":8,"logicalPage":15,"side":"right","pdfPage":8},{"no":89,"dist":97.59,"inter":1.54,"page":8,"logicalPage":15,"side":"right","pdfPage":8},{"no":90,"dist":99.25,"inter":1.66,"page":8,"logicalPage":15,"side":"right","pdfPage":8},{"no":91,"dist":100.88,"inter":1.63,"page":9,"logicalPage":16,"side":"left","pdfPage":9},{"no":92,"dist":101.7,"inter":0.82,"page":9,"logicalPage":16,"side":"left","pdfPage":9},{"no":93,"dist":102.01,"inter":0.31,"page":9,"logicalPage":16,"side":"left","pdfPage":9},{"no":94,"dist":104.17,"inter":2.16,"page":9,"logicalPage":16,"side":"left","pdfPage":9},{"no":95,"dist":104.3,"inter":0.13,"page":9,"logicalPage":16,"side":"left","pdfPage":9},{"no":96,"dist":104.6,"inter":0.3,"page":9,"logicalPage":16,"side":"left","pdfPage":9},{"no":97,"dist":104.87,"inter":0.27,"page":9,"logicalPage":17,"side":"right","pdfPage":9},{"no":98,"dist":104.98,"inter":0.11,"page":9,"logicalPage":17,"side":"right","pdfPage":9},{"no":99,"dist":105.11,"inter":0.13,"page":9,"logicalPage":17,"side":"right","pdfPage":9},{"no":100,"dist":105.33,"inter":0.22,"page":9,"logicalPage":17,"side":"right","pdfPage":9},{"no":101,"dist":105.43,"inter":0.1,"page":9,"logicalPage":17,"side":"right","pdfPage":9},{"no":102,"dist":105.71,"inter":0.28,"page":9,"logicalPage":17,"side":"right","pdfPage":9},{"no":103,"dist":107.16,"inter":1.45,"page":10,"logicalPage":18,"side":"left","pdfPage":10},{"no":104,"dist":107.3,"inter":0.14,"page":10,"logicalPage":18,"side":"left","pdfPage":10},{"no":105,"dist":110.34,"inter":3.04,"page":10,"logicalPage":18,"side":"left","pdfPage":10},{"no":106,"dist":112.51,"inter":2.17,"page":10,"logicalPage":18,"side":"left","pdfPage":10},{"no":107,"dist":114.75,"inter":2.24,"page":10,"logicalPage":18,"side":"left","pdfPage":10},{"no":108,"dist":117.08,"inter":2.33,"page":10,"logicalPage":18,"side":"left","pdfPage":10},{"no":109,"dist":117.95,"inter":0.87,"page":10,"logicalPage":19,"side":"right","pdfPage":10},{"no":110,"dist":118.26,"inter":0.31,"page":10,"logicalPage":19,"side":"right","pdfPage":10},{"no":111,"dist":121.23,"inter":2.97,"page":10,"logicalPage":19,"side":"right","pdfPage":10},{"no":112,"dist":123.66,"inter":2.43,"page":10,"logicalPage":19,"side":"right","pdfPage":10},{"no":113,"dist":126.17,"inter":2.51,"page":10,"logicalPage":19,"side":"right","pdfPage":10},{"no":114,"dist":126.63,"inter":0.46,"page":10,"logicalPage":19,"side":"right","pdfPage":10},{"no":115,"dist":127.75,"inter":1.12,"page":11,"logicalPage":20,"side":"left","pdfPage":11},{"no":116,"dist":128.54,"inter":0.79,"page":11,"logicalPage":20,"side":"left","pdfPage":11},{"no":117,"dist":128.9,"inter":0.36,"page":11,"logicalPage":20,"side":"left","pdfPage":11},{"no":118,"dist":130.73,"inter":1.83,"page":11,"logicalPage":20,"side":"left","pdfPage":11},{"no":119,"dist":131.13,"inter":0.4,"page":11,"logicalPage":20,"side":"left","pdfPage":11},{"no":120,"dist":131.68,"inter":0.55,"page":11,"logicalPage":20,"side":"left","pdfPage":11},{"no":121,"dist":132.29,"inter":0.61,"page":11,"logicalPage":21,"side":"right","pdfPage":11},{"no":122,"dist":132.86,"inter":0.57,"page":11,"logicalPage":21,"side":"right","pdfPage":11},{"no":123,"dist":134.59,"inter":1.73,"page":11,"logicalPage":21,"side":"right","pdfPage":11},{"no":124,"dist":135.12,"inter":0.53,"page":11,"logicalPage":21,"side":"right","pdfPage":11},{"no":125,"dist":137.68,"inter":2.56,"page":11,"logicalPage":21,"side":"right","pdfPage":11},{"no":126,"dist":140.17,"inter":2.49,"page":11,"logicalPage":21,"side":"right","pdfPage":11},{"no":127,"dist":145.87,"inter":5.7,"page":12,"logicalPage":22,"side":"left","pdfPage":12},{"no":128,"dist":146.47,"inter":0.6,"page":12,"logicalPage":22,"side":"left","pdfPage":12},{"no":129,"dist":150.48,"inter":4.01,"page":12,"logicalPage":22,"side":"left","pdfPage":12},{"no":130,"dist":151.11,"inter":0.63,"page":12,"logicalPage":22,"side":"left","pdfPage":12},{"no":131,"dist":151.58,"inter":0.47,"page":12,"logicalPage":22,"side":"left","pdfPage":12},{"no":132,"dist":153.48,"inter":1.9,"page":12,"logicalPage":22,"side":"left","pdfPage":12},{"no":133,"dist":162.42,"inter":8.94,"page":12,"logicalPage":23,"side":"right","pdfPage":12},{"no":134,"dist":164.69,"inter":2.27,"page":12,"logicalPage":23,"side":"right","pdfPage":12},{"no":135,"dist":165.0,"inter":0.31,"page":12,"logicalPage":23,"side":"right","pdfPage":12},{"no":136,"dist":165.61,"inter":0.61,"page":12,"logicalPage":23,"side":"right","pdfPage":12},{"no":137,"dist":166.82,"inter":1.21,"page":12,"logicalPage":23,"side":"right","pdfPage":12},{"no":138,"dist":168.81,"inter":1.99,"page":12,"logicalPage":23,"side":"right","pdfPage":12},{"no":139,"dist":169.62,"inter":0.81,"page":13,"logicalPage":24,"side":"left","pdfPage":13},{"no":140,"dist":174.0,"inter":4.38,"page":13,"logicalPage":24,"side":"left","pdfPage":13},{"no":141,"dist":182.52,"inter":8.52,"page":13,"logicalPage":24,"side":"left","pdfPage":13},{"no":142,"dist":186.48,"inter":3.96,"page":13,"logicalPage":24,"side":"left","pdfPage":13},{"no":143,"dist":186.88,"inter":0.4,"page":13,"logicalPage":24,"side":"left","pdfPage":13},{"no":144,"dist":188.18,"inter":1.3,"page":13,"logicalPage":24,"side":"left","pdfPage":13},{"no":145,"dist":189.34,"inter":1.16,"page":13,"logicalPage":25,"side":"right","pdfPage":13},{"no":146,"dist":194.35,"inter":5.01,"page":13,"logicalPage":25,"side":"right","pdfPage":13},{"no":147,"dist":195.5,"inter":1.15,"page":13,"logicalPage":25,"side":"right","pdfPage":13},{"no":148,"dist":196.66,"inter":1.16,"page":13,"logicalPage":25,"side":"right","pdfPage":13},{"no":149,"dist":206.26,"inter":9.6,"page":13,"logicalPage":25,"side":"right","pdfPage":13},{"no":150,"dist":207.66,"inter":1.4,"page":13,"logicalPage":25,"side":"right","pdfPage":13},{"no":151,"dist":210.02,"inter":2.36,"page":14,"logicalPage":26,"side":"left","pdfPage":14},{"no":152,"dist":211.81,"inter":1.79,"page":14,"logicalPage":26,"side":"left","pdfPage":14},{"no":153,"dist":212.79,"inter":0.98,"page":14,"logicalPage":26,"side":"left","pdfPage":14},{"no":154,"dist":214.83,"inter":2.04,"page":14,"logicalPage":26,"side":"left","pdfPage":14},{"no":155,"dist":215.47,"inter":0.64,"page":14,"logicalPage":26,"side":"left","pdfPage":14},{"no":156,"dist":215.99,"inter":0.52,"page":14,"logicalPage":26,"side":"left","pdfPage":14},{"no":157,"dist":216.86,"inter":0.87,"page":14,"logicalPage":27,"side":"right","pdfPage":14},{"no":158,"dist":217.23,"inter":0.37,"page":14,"logicalPage":27,"side":"right","pdfPage":14},{"no":159,"dist":217.35,"inter":0.12,"page":14,"logicalPage":27,"side":"right","pdfPage":14},{"no":160,"dist":217.69,"inter":0.34,"page":14,"logicalPage":27,"side":"right","pdfPage":14},{"no":161,"dist":218.27,"inter":0.58,"page":14,"logicalPage":27,"side":"right","pdfPage":14},{"no":162,"dist":218.44,"inter":0.17,"page":14,"logicalPage":27,"side":"right","pdfPage":14},{"no":163,"dist":218.7,"inter":0.26,"page":15,"logicalPage":28,"side":"left","pdfPage":15},{"no":164,"dist":219.31,"inter":0.61,"page":15,"logicalPage":28,"side":"left","pdfPage":15},{"no":165,"dist":219.5,"inter":0.19,"page":15,"logicalPage":28,"side":"left","pdfPage":15},{"no":166,"dist":219.88,"inter":0.38,"page":15,"logicalPage":28,"side":"left","pdfPage":15},{"no":167,"dist":220.5,"inter":0.62,"page":15,"logicalPage":28,"side":"left","pdfPage":15},{"no":168,"dist":224.05,"inter":3.55,"page":15,"logicalPage":28,"side":"left","pdfPage":15},{"no":169,"dist":224.71,"inter":0.66,"page":15,"logicalPage":29,"side":"right","pdfPage":15},{"no":170,"dist":229.77,"inter":5.06,"page":15,"logicalPage":29,"side":"right","pdfPage":15},{"no":171,"dist":230.51,"inter":0.74,"page":15,"logicalPage":29,"side":"right","pdfPage":15},{"no":172,"dist":233.49,"inter":2.98,"page":15,"logicalPage":29,"side":"right","pdfPage":15},{"no":173,"dist":234.15,"inter":0.66,"page":15,"logicalPage":29,"side":"right","pdfPage":15},{"no":174,"dist":239.86,"inter":5.71,"page":15,"logicalPage":29,"side":"right","pdfPage":15},{"no":175,"dist":240.62,"inter":0.76,"page":16,"logicalPage":30,"side":"left","pdfPage":16},{"no":176,"dist":243.96,"inter":3.34,"page":16,"logicalPage":30,"side":"left","pdfPage":16},{"no":177,"dist":244.88,"inter":0.92,"page":16,"logicalPage":30,"side":"left","pdfPage":16},{"no":178,"dist":248.64,"inter":3.76,"page":16,"logicalPage":30,"side":"left","pdfPage":16},{"no":179,"dist":250.86,"inter":2.22,"page":16,"logicalPage":30,"side":"left","pdfPage":16},{"no":180,"dist":250.99,"inter":0.13,"page":16,"logicalPage":30,"side":"left","pdfPage":16},{"no":181,"dist":252.01,"inter":1.02,"page":16,"logicalPage":31,"side":"right","pdfPage":16},{"no":182,"dist":252.91,"inter":0.9,"page":16,"logicalPage":31,"side":"right","pdfPage":16},{"no":183,"dist":253.97,"inter":1.06,"page":16,"logicalPage":31,"side":"right","pdfPage":16},{"no":184,"dist":254.96,"inter":0.99,"page":16,"logicalPage":31,"side":"right","pdfPage":16},{"no":185,"dist":255.88,"inter":0.92,"page":16,"logicalPage":31,"side":"right","pdfPage":16},{"no":186,"dist":259.66,"inter":3.78,"page":16,"logicalPage":31,"side":"right","pdfPage":16},{"no":187,"dist":264.44,"inter":4.78,"page":17,"logicalPage":32,"side":"left","pdfPage":17},{"no":188,"dist":264.83,"inter":0.39,"page":17,"logicalPage":32,"side":"left","pdfPage":17},{"no":189,"dist":269.98,"inter":5.15,"page":17,"logicalPage":32,"side":"left","pdfPage":17},{"no":190,"dist":272.45,"inter":2.47,"page":17,"logicalPage":32,"side":"left","pdfPage":17},{"no":191,"dist":281.49,"inter":9.04,"page":17,"logicalPage":32,"side":"left","pdfPage":17},{"no":192,"dist":287.1,"inter":5.61,"page":17,"logicalPage":32,"side":"left","pdfPage":17},{"no":193,"dist":292.6,"inter":5.5,"page":17,"logicalPage":33,"side":"right","pdfPage":17},{"no":194,"dist":292.6,"inter":0.0,"page":17,"logicalPage":33,"side":"right","pdfPage":17},{"no":195,"dist":292.81,"inter":0.21,"page":17,"logicalPage":33,"side":"right","pdfPage":17},{"no":196,"dist":293.4,"inter":0.59,"page":17,"logicalPage":33,"side":"right","pdfPage":17},{"no":197,"dist":293.87,"inter":0.47,"page":17,"logicalPage":33,"side":"right","pdfPage":17},{"no":198,"dist":300.67,"inter":6.8,"page":17,"logicalPage":33,"side":"right","pdfPage":17},{"no":199,"dist":305.03,"inter":4.36,"page":18,"logicalPage":34,"side":"left","pdfPage":18},{"no":200,"dist":307.26,"inter":2.23,"page":18,"logicalPage":34,"side":"left","pdfPage":18},{"no":201,"dist":307.42,"inter":0.16,"page":18,"logicalPage":34,"side":"left","pdfPage":18},{"no":202,"dist":310.62,"inter":3.2,"page":18,"logicalPage":34,"side":"left","pdfPage":18},{"no":203,"dist":310.91,"inter":0.29,"page":18,"logicalPage":34,"side":"left","pdfPage":18},{"no":204,"dist":311.83,"inter":0.92,"page":18,"logicalPage":34,"side":"left","pdfPage":18},{"no":205,"dist":314.25,"inter":2.42,"page":18,"logicalPage":35,"side":"right","pdfPage":18},{"no":206,"dist":318.75,"inter":4.5,"page":18,"logicalPage":35,"side":"right","pdfPage":18},{"no":207,"dist":319.86,"inter":1.11,"page":18,"logicalPage":35,"side":"right","pdfPage":18},{"no":208,"dist":322.03,"inter":2.17,"page":18,"logicalPage":35,"side":"right","pdfPage":18},{"no":209,"dist":325.41,"inter":3.38,"page":18,"logicalPage":35,"side":"right","pdfPage":18},{"no":210,"dist":326.26,"inter":0.85,"page":18,"logicalPage":35,"side":"right","pdfPage":18},{"no":211,"dist":326.79,"inter":0.53,"page":19,"logicalPage":36,"side":"left","pdfPage":19},{"no":212,"dist":326.91,"inter":0.12,"page":19,"logicalPage":36,"side":"left","pdfPage":19},{"no":213,"dist":327.84,"inter":0.93,"page":19,"logicalPage":36,"side":"left","pdfPage":19},{"no":214,"dist":328.56,"inter":0.72,"page":19,"logicalPage":36,"side":"left","pdfPage":19},{"no":215,"dist":328.81,"inter":0.25,"page":19,"logicalPage":36,"side":"left","pdfPage":19},{"no":216,"dist":329.25,"inter":0.44,"page":19,"logicalPage":36,"side":"left","pdfPage":19},{"no":217,"dist":330.62,"inter":1.37,"page":19,"logicalPage":37,"side":"right","pdfPage":19},{"no":218,"dist":330.72,"inter":0.1,"page":19,"logicalPage":37,"side":"right","pdfPage":19},{"no":219,"dist":330.83,"inter":0.11,"page":19,"logicalPage":37,"side":"right","pdfPage":19},{"no":220,"dist":331.45,"inter":0.62,"page":19,"logicalPage":37,"side":"right","pdfPage":19},{"no":221,"dist":331.94,"inter":0.49,"page":19,"logicalPage":37,"side":"right","pdfPage":19},{"no":222,"dist":332.44,"inter":0.5,"page":19,"logicalPage":37,"side":"right","pdfPage":19},{"no":223,"dist":333.73,"inter":1.29,"page":20,"logicalPage":38,"side":"left","pdfPage":20},{"no":224,"dist":336.67,"inter":2.94,"page":20,"logicalPage":38,"side":"left","pdfPage":20},{"no":225,"dist":337.57,"inter":0.9,"page":20,"logicalPage":38,"side":"left","pdfPage":20},{"no":226,"dist":338.7,"inter":1.13,"page":20,"logicalPage":38,"side":"left","pdfPage":20},{"no":227,"dist":340.76,"inter":2.06,"page":20,"logicalPage":38,"side":"left","pdfPage":20},{"no":228,"dist":341.54,"inter":0.78,"page":20,"logicalPage":38,"side":"left","pdfPage":20},{"no":229,"dist":343.25,"inter":1.71,"page":20,"logicalPage":39,"side":"right","pdfPage":20},{"no":230,"dist":345.7,"inter":2.45,"page":20,"logicalPage":39,"side":"right","pdfPage":20},{"no":231,"dist":350.38,"inter":4.68,"page":20,"logicalPage":39,"side":"right","pdfPage":20},{"no":232,"dist":360.69,"inter":10.31,"page":20,"logicalPage":39,"side":"right","pdfPage":20},{"no":233,"dist":362.52,"inter":1.83,"page":20,"logicalPage":39,"side":"right","pdfPage":20},{"no":234,"dist":365.19,"inter":2.67,"page":20,"logicalPage":39,"side":"right","pdfPage":20}];
+let RALLY_FORMAT="A4";
+let ROUTE=A4_ROUTE;
+let ROUTE_META={format:"A4",source:"KOMAREN_Classic2026.pdf",pages_total:20,roadbook_pages:39,rows:A4_ROUTE.length,derived_total_count:0};
+const $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+let pdf=null,page=1,logicalPage=1,logicalCount=39,zoom=1,renderedZoom=1,fitScale=1,panX=0,panY=0,pdfStepRate=100.0,portraitPdfStepCorrection=100.0,pdfViewLayout='single',pdfViewPages=[],pdfPanHistory=new Map();
+let pdfContinuousTimer=null,pdfContinuousRAF=null,pdfContinuousDirection=0,pdfContinuousStartedAt=0,pdfContinuousLastTs=0,pdfContinuousTriggered=false,pdfContinuousSuppressClick=false,pdfContinuousPageChanging=false;
+let pendingPdfBuffer=null,pendingPdfName='';
+let gpsDistance=0,gpsRawDistance=0,totalZeroBase=0,totalOffset=0,legBase=0,legOffset=0,lastTs=null,timerStart=null,elapsedMs=0,running=false,stageStarted=false,autoNext=true,rb=0;
+let reverseMode=false,reverseDistanceKm=0;
+const AUTO_NEXT_TRIGGER_M=0;
+const SESSION_KEY='matsu-rallycon-session-v0651-a5dev';
+const APP_VERSION='0.8.57-MODE-SELECT';
+const APP_MODE_KEY='matsu-rallycon-app-mode-v1';
+let APP_MODE='RALLYCON';
+let RALLY_ORIENTATION='AUTO';
+function readAppModePrefs(){try{const v=JSON.parse(localStorage.getItem(APP_MODE_KEY)||'null');if(v&&['RALLYCON','PDF_VIEW'].includes(v.mode)){APP_MODE=v.mode;RALLY_ORIENTATION=['PORTRAIT','LANDSCAPE'].includes(v.orientation)?v.orientation:'AUTO';return true}}catch(e){}return false}
+function saveAppModePrefs(){try{localStorage.setItem(APP_MODE_KEY,JSON.stringify({mode:APP_MODE,orientation:RALLY_ORIENTATION}))}catch(e){}}
+function applyAppMode(){document.body.classList.toggle('pdfViewAppMode',APP_MODE==='PDF_VIEW');if($('modeBtn'))$('modeBtn').textContent=APP_MODE==='PDF_VIEW'?'PDF':'RALLY';}
+function openAppModeModal(){const m=$('appModeModal');m.classList.add('open');m.setAttribute('aria-hidden','false');$('rallyOrientationChoice').hidden=true;$('cancelAppMode').style.display=pdf? 'block':'none'}
+function closeAppModeModal(){const m=$('appModeModal');m.classList.remove('open');m.setAttribute('aria-hidden','true')}
+async function requestRallyOrientationLock(){try{const target=RALLY_ORIENTATION==='PORTRAIT'?'portrait':RALLY_ORIENTATION==='LANDSCAPE'?'landscape':null;if(target&&screen.orientation?.lock)await screen.orientation.lock(target)}catch(e){console.info('Screen orientation lock is unavailable; following device orientation.',e?.message||e)}}
+function selectAppMode(mode,orientation='AUTO'){const modeChanged=APP_MODE!==mode;if(modeChanged&&pdf&&!window.confirm('使用モードを変更すると、現在のPDFを再選択する必要があります。\\n\\nモードを変更しますか？'))return;APP_MODE=mode;RALLY_ORIENTATION=orientation;saveAppModePrefs();applyAppMode();closeAppModeModal();if(modeChanged&&pdf){location.reload();return}if(mode==='RALLYCON')requestRallyOrientationLock();else{try{screen.orientation?.unlock?.()}catch(e){}}}
+
+
+const A5_DEV_LABEL='Matsu RallyCon v0.8.57: MODE SELECT';
+const LEGACY_SESSION_VERSIONS=new Set(['0.8.53-KOMAREN-KANTO-A5-HIGHLIGHT','0.8.50-PAGE-LIFECYCLE-DIAGNOSTIC','0.8.51-KOMAREN-KANTO-PDF-REPLACED','0.8.52-KOMAREN-KANTO-TOTAL-FIX','0.6.38','0.6.39','0.6.40','0.6.41','0.6.42','0.6.43','0.6.44','0.6.45','0.6.46','0.6.47','0.6.48','0.6.49','0.7.1','0.7.2-GPS-DEV','0.7.2-GPS-DEV2','0.7.3-LONG-PDF','0.7.5-UNIVERSAL-PDF','0.7.6-UNIVERSAL-PDF','0.7.7-UNIVERSAL-PDF','0.7.8-UNIVERSAL-PDF','0.7.9-UNIVERSAL-PDF','0.8.0-UNIVERSAL-PDF','0.8.1-UNIVERSAL-PDF']);
+let wakeLock=null, suppressSessionSave=false, restoredPortraitScrollTop=0;
+let pointers=new Map(),pinchStartDist=0,pinchStartZoom=1,gestureMoved=false;
+const dpr=()=>Math.min(window.devicePixelRatio||1,2);
+function fmtKm(v){return Math.max(0,v).toFixed(2)} function setStatus(t){$('status').textContent=t}
+function getTotalKm(){return Math.max(0,gpsDistance-totalZeroBase+totalOffset)}
+function getLegKm(){return Math.max(0,gpsDistance-legBase+legOffset)}
+function display(save=true){const t=getTotalKm(),l=getLegKm();const totalEl=$('total'),rbEl=$('rbNo');totalEl.textContent=fmtKm(t);totalEl.classList.toggle('threeDigit',Math.abs(t)>=100);rbEl.classList.toggle('threeDigit',Number(ROUTE[rb]?.no||0)>=100);$('leg').textContent=fmtKm(l);$('speed').textContent=Math.round(lastTs?.speed||0);const e=ROUTE[rb];$('target').textContent=e?fmtKm(e.dist):'--';$('remain').textContent=e?fmtKm(Math.max(0,e.dist-t)):'--';const revEl=$('reverseDistance');if(revEl)revEl.textContent=reverseDistanceKm>=0.005?`−${reverseDistanceKm.toFixed(2)}`:'0.00';const revBox=$('reverseInfo');if(revBox)revBox.classList.toggle('open',reverseMode);const revBtn=$('reverseBtn');if(revBtn){revBtn.classList.toggle('active',reverseMode);revBtn.textContent=reverseMode?'REV: ON':'REV'}syncPortraitRallyHud(t);checkAutoNext();if(save)saveSession()}
+function checkAutoNext(){if(reverseMode||!autoNext||!stageStarted||!running)return;const t=getTotalKm();while(rb>0&&rb<ROUTE.length-1){const target=ROUTE[rb]?.dist;if(target==null||t < target-AUTO_NEXT_TRIGGER_M/1000)break;moveRB(1,false)}}
+function capturePdfViewportState(){
+  let portraitScrollTop=0;
+  try{const e=portraitRallyEls();if(e?.scroll)portraitScrollTop=Number(e.scroll.scrollTop)||0}catch(e){}
+  return {zoom,panX,panY,pdfViewLayout,portraitScrollTop};
+}
+function saveSession(){if(suppressSessionSave||APP_MODE==='PDF_VIEW')return;try{const view=capturePdfViewportState();localStorage.setItem(SESSION_KEY,JSON.stringify({version:APP_VERSION,stageStarted,running:false,gpsDistance,gpsRawDistance,gpsDistanceRate,gpsCorrectionRate,gpsTotalMeters,totalZeroBase,totalOffset,legBase,legOffset,elapsedMs:elapsedMs+(running&&timerStart?performance.now()-timerStart:0),rb,autoNext,logicalPage,page,reverseMode,reverseDistanceKm,view}))}catch(e){}}
+function restoreSession(){try{const raw=localStorage.getItem(SESSION_KEY);if(!raw)return false;const x=JSON.parse(raw);const versionOk=x?.version===APP_VERSION||x?.version==='0.8.56-PDF-NONE'||x?.version==='0.8.55-GPS-CORR-0.1-TOTAL-RB-SYNC'||x?.version==='0.8.45-UNIVERSAL-PDF-A5-RALLY-VIEW'||LEGACY_SESSION_VERSIONS.has(x?.version);if(!versionOk||!x.stageStarted)return false;gpsDistance=Number(x.gpsDistance)||0;gpsRawDistance=Number.isFinite(Number(x.gpsRawDistance))?Number(x.gpsRawDistance):gpsDistance;gpsTotalMeters=gpsRawDistance*1000;gpsDistanceRate=clamp(Number(x.gpsDistanceRate)||1,0.5,1.5);gpsCorrectionRate=Math.round(gpsDistanceRate*1000)/10;$('gpsCorrValue').textContent=`${gpsCorrectionRate.toFixed(1)}%`;totalZeroBase=Number(x.totalZeroBase)||0;totalOffset=Number(x.totalOffset)||0;legBase=Number(x.legBase)||0;legOffset=Number(x.legOffset)||0;elapsedMs=Math.max(0,Number(x.elapsedMs)||0);rb=clamp(Number(x.rb)||0,0,ROUTE.length-1);autoNext=x.autoNext!==false;running=false;stageStarted=true;timerStart=null;logicalPage=clamp(Number(x.logicalPage)||1,1,logicalCount);page=mapping(logicalPage).pdf;const v=x.view||{};zoom=clamp(Number(v.zoom)||1,.5,4);panX=Number.isFinite(Number(v.panX))?Number(v.panX):0;panY=Number.isFinite(Number(v.panY))?Number(v.panY):0;pdfViewLayout=(v.pdfViewLayout==='twoUp'||v.pdfViewLayout==='single')?v.pdfViewLayout:pdfViewLayout;restoredPortraitScrollTop=Math.max(0,Number(v.portraitScrollTop)||0);return true}catch(e){return false}}
+function clearSession(){try{localStorage.removeItem(SESSION_KEY)}catch(e){}}
+async function resetRally(){
+  const ok=window.confirm('現在のラリー記録をすべてリセットします。\n\nTOTAL・LEG・TIME・現在のRB・GPS距離を初期状態に戻します。\n\nリセットしますか？');
+  if(!ok)return;
+  suppressSessionSave=true;
+  try{
+    running=false;
+    stageStarted=false;
+    timerStart=null;
+    elapsedMs=0;
+    gpsDistance=0;
+    gpsRawDistance=0;
+    gpsDistanceRate=1;
+    gpsCorrectionRate=100;
+    gpsTotalMeters=0;
+    gpsLast=null;
+    gpsLostAnchor=null;
+    lastTs=null;
+    gpsSampleCount=0;
+    gpsLost=false;
+    gpsActive=false;
+    gpsUserEnabled=false;
+    if(gpsWatchId!==null&&navigator.geolocation)navigator.geolocation.clearWatch(gpsWatchId);
+    gpsWatchId=null;
+    totalZeroBase=0;
+    totalOffset=0;
+    legBase=0;
+    legOffset=0;
+    rb=1;
+    $('gpsCorrValue').textContent=`${gpsCorrectionRate.toFixed(1)}%`;
+    if($('gpsCorrModalValue'))$('gpsCorrModalValue').textContent=`${gpsCorrectionRate.toFixed(1)}%`;
+    logicalPage=logicalFromRB();
+    page=mapping(logicalPage).pdf;
+    zoom=1;
+    panX=0;
+    panY=0;
+    await releaseWakeLock();
+    clearSession();
+    if(pdf){await renderPage();setRB(1,false)}else{display(false)}
+    $('startBtn').textContent='START';
+    $('time').textContent='00:00:00';
+    $('speed').textContent='0';
+    setStatus('READY');
+  }finally{
+    suppressSessionSave=false;
+    clearSession();
+  }
+}
+async function requestWakeLock(){try{if(!('wakeLock' in navigator)||wakeLock)return;wakeLock=await navigator.wakeLock.request('screen');wakeLock.addEventListener?.('release',()=>{wakeLock=null})}catch(e){wakeLock=null}}
+async function releaseWakeLock(){try{await wakeLock?.release()}catch(e){}wakeLock=null}
+let targetCenterToken=0;
+const ROADBOOK_ROW_CENTER_X_PT=[481.595,398.39,315.925,233.46,151.205,68.7];
+function syncLegToTarget(){const t=getTotalKm();const target=Number(ROUTE[rb]?.dist)||0;const desired=Math.max(0,t-target);legOffset=0;legBase=gpsDistance-desired}
+function setRB(i,doAuto=true){const prevRb=rb;rb=clamp(i,0,ROUTE.length-1);const e=ROUTE[rb];if(rb>prevRb&&stageStarted)syncLegToTarget();$('rbNo').textContent=e.no;$('target').textContent=fmtKm(e.dist);const token=++targetCenterToken;const renderPromise=syncLogical(false);Promise.resolve(renderPromise).then(()=>{if(token===targetCenterToken)centerTargetInView()});display(doAuto);if(isPortraitFallback())syncPortraitFallbackPosition();else schedulePortraitRallyFollow()}
+function logicalFromRB(){return Math.max(1,Number(ROUTE[rb]?.logicalPage)||1)}
+function mapping(lp){if(RALLY_FORMAT==='A5'){const i=clamp((Number(lp)||1)-1,0,Math.max(0,ROUTE.length-1));const e=ROUTE[Math.min(i*6,ROUTE.length-1)]||ROUTE[0];return {pdf:Number(e?.pdfPage)||Math.max(2,(Number(lp)||1)+1),side:'full'}}if(RALLY_FORMAT==='LONGPDF')return {pdf:clamp(Number(lp)||1,1,pdf?.numPages||1),side:'full'};if(RALLY_FORMAT==='PDFVIEW'){if(pdfViewLayout==='twoUp'&&pdfViewPages.length){return pdfViewPages[clamp((Number(lp)||1)-1,0,pdfViewPages.length-1)]}return {pdf:clamp(Number(lp)||1,1,pdf?.numPages||1),side:'full'}}if(lp===1)return {pdf:1,side:'right'};return {pdf:Math.floor(lp/2)+1,side:lp%2===0?'left':'right'}}
+function targetRowIndex(){if(RALLY_FORMAT==='A5')return Math.max(0,Number(ROUTE[rb]?.row||1)-1);return rb<6?rb:(rb-6)%6}
+function centerTargetInView(){
+ const st=$('stage'),c=$('pdfCanvas');
+ if(!st||!c||!c.clientHeight)return;
+ const stageRect=st.getBoundingClientRect();
+ if(RALLY_FORMAT==='LONGPDF'||RALLY_FORMAT==='PDFVIEW')return;
+ if(RALLY_FORMAT==='A5'){
+   // A5: measure the ACTUAL transformed canvas rectangle, then shift by the
+   // measured error. This is deliberately geometry-based so CSS transform
+   // origin, DPR and browser scaling cannot introduce a fixed offset.
+   // A5 KomaRen has six equal roadbook rows between the table's fixed
+   // top/bottom boundaries.  The RB number is rotated/positioned near the
+   // lower part of each row, so its text bbox is NOT the row centre.
+   // Use the actual table geometry instead of the RB text position.
+   const TABLE_TOP_PT=76.08, TABLE_BOTTOM_PT=576.96;
+   const slot=targetRowIndex();
+   const rowRatio=(TABLE_TOP_PT + (slot+0.5)*(TABLE_BOTTOM_PT-TABLE_TOP_PT)/6) / 595.32;
+   const parsedRatio=Number(ROUTE[rb]?.rowCenterRatio);
+   const ratio=(Number.isFinite(parsedRatio)&&parsedRatio>0&&parsedRatio<1) ? parsedRatio : rowRatio;
+   const rect=c.getBoundingClientRect();
+   const targetScreenY=rect.top+rect.height*ratio;
+   const stageCenterY=stageRect.top+stageRect.height/2;
+   // v0.8.37: place the active A5 roadbook row slightly below the exact
+   // vertical center for a more natural riding-view position.
+   // v0.8.38: the first row on each A5 page needs a small additional
+   // downward correction; rows 2-6 retain the v0.8.37 position.
+   const CENTER_DOWN_PX=10;
+   const FIRST_ROW_EXTRA_DOWN_PX=5;
+   const desiredShift=(stageCenterY+CENTER_DOWN_PX+(slot===0?FIRST_ROW_EXTRA_DOWN_PX:0))-targetScreenY;
+   if(Math.abs(desiredShift)>0.25){panY+=desiredShift;applyPan();}
+   return;
+ }
+ const baseHeight=595.32;
+ const yPt=baseHeight-ROADBOOK_ROW_CENTER_X_PT[targetRowIndex()];
+ const targetY=yPt/baseHeight*c.clientHeight;
+ const targetRect=c.getBoundingClientRect();
+ const k=zoom/Math.max(.001,renderedZoom);
+ const targetScreenY=targetRect.top+targetY*k;
+ const desiredShift=stageRect.top+stageRect.height/2-targetScreenY;
+ if(Math.abs(desiredShift)<0.5)return;
+ panY+=desiredShift;
+ applyPan();
+}
+function panBounds(){
+ const st=$('stage'),c=$('pdfCanvas'),k=zoom/Math.max(.001,renderedZoom);
+ const W=c.clientWidth,H=c.clientHeight,w=W*k,h=H*k;
+ // canvasWrap is top-aligned in the stage but scaled around its center.
+ // Therefore the no-blank limits are asymmetric once k != 1.
+ const minX=st.clientWidth-(W+w)/2;
+ const maxX=(w-W)/2;
+ let minY=st.clientHeight-(H+h)/2;
+ let maxY=(h-H)/2;
+ // v0.8.36: In A5 KomaRen, allow the active roadbook row itself to be
+ // centered even when that requires a small amount of blank space beyond the
+ // physical PDF page. The stage background is intentionally dark, so only the
+ // non-page area becomes black; the PDF is never stretched or altered.
+ if(RALLY_FORMAT==='A5'&&c.clientHeight){
+   const TABLE_TOP_PT=76.08, TABLE_BOTTOM_PT=576.96;
+   const slot=targetRowIndex();
+   const fallbackRatio=(TABLE_TOP_PT+(slot+0.5)*(TABLE_BOTTOM_PT-TABLE_TOP_PT)/6)/595.32;
+   const parsedRatio=Number(ROUTE[rb]?.rowCenterRatio);
+   const ratio=(Number.isFinite(parsedRatio)&&parsedRatio>0&&parsedRatio<1)?parsedRatio:fallbackRatio;
+   // v0.8.39: the centering correction is intentionally below the exact
+   // stage center, so the A5 pan bounds must allow that same downward offset.
+   // Without this, clampPan() trims the requested shift near the page edge;
+   // the first row therefore appears to ignore most of the correction.
+   const CENTER_DOWN_PX=10;
+   const FIRST_ROW_EXTRA_DOWN_PX=5;
+   const centerDown=CENTER_DOWN_PX+(slot===0?FIRST_ROW_EXTRA_DOWN_PX:0);
+   const desiredPan=(st.clientHeight-H)/2 + h*(0.5-ratio) + centerDown;
+   minY=Math.min(minY,desiredPan);
+   maxY=Math.max(maxY,desiredPan);
+ }
+ return{x:Math.max(0,(w-st.clientWidth)/2),y:Math.max(0,h-st.clientHeight),minX,maxX,minY,maxY};
+}
+function clampPan(){
+ const b=panBounds();
+ panX=clamp(panX,b.minX,b.maxX);
+ // canvasWrap is transform-origin:center center. Keep the rendered page
+ // edge-to-edge inside the stage at every zoom level; do not allow blank space.
+ panY=clamp(panY,b.minY,b.maxY);
+}
+function applyPan(){clampPan();const k=zoom/Math.max(.001,renderedZoom);$('canvasWrap').style.transform=`translate3d(${panX}px,${panY}px,0) scale(${k})`}
+function setZoom(z,fx=null,fy=null){const old=zoom;zoom=clamp(z,.5,4);if(fx!=null&&fy!=null&&old!==zoom){const st=$('stage'),cx=fx-st.clientWidth/2,cy=fy-st.clientHeight/2;panX=cx-(cx-panX)*(zoom/old);panY=cy-(cy-panY)*(zoom/old)}if(zoom<=1){panX=0;panY=0}applyPan();}
+function logicalCountForDocForFormat(doc,format){return doc?(format==='A5'?Math.max(1,ROUTE_META?.roadbook_pages||Math.floor(ROUTE.length/6)):(format==='LONGPDF')?doc.numPages:(format==='PDFVIEW')?(pdfViewLayout==='twoUp'?pdfViewPages.length:doc.numPages):doc.numPages*2-1):39}
+function logicalCountForDoc(){return pdf?(RALLY_FORMAT==='A5'?Math.max(1,ROUTE_META?.roadbook_pages||Math.floor(ROUTE.length/6)):(RALLY_FORMAT==='LONGPDF')?pdf.numPages:(RALLY_FORMAT==='PDFVIEW')?(pdfViewLayout==='twoUp'?pdfViewPages.length:pdf.numPages):pdf.numPages*2-1):39}
+function rememberPdfPan(){if(isFallbackPdf()&&logicalPage>=1)pdfPanHistory.set(logicalPage,panY)}
+function syncLogical(resetPan=true){const lp=logicalFromRB();if(lp!==logicalPage){logicalPage=lp;page=mapping(lp).pdf;if(resetPan){panX=0;panY=0}return renderPage()}return Promise.resolve()}
+async function renderPage(){
+ if(!pdf)return;
+ const m=mapping(logicalPage);
+ const p=await pdf.getPage(m.pdf);
+ const base=p.getViewport({scale:1,rotation:p.rotate||0});
+ const stage=$('stage');
+ const availW=Math.max(120,stage.clientWidth-6);
+ const availH=Math.max(120,stage.clientHeight-6);
+ const baseW=base.width, baseH=base.height;
+ const pdfViewTwoUp=RALLY_FORMAT==='PDFVIEW'&&pdfViewLayout==='twoUp';
+ fitScale=(RALLY_FORMAT==='A5'||RALLY_FORMAT==='LONGPDF'||(RALLY_FORMAT==='PDFVIEW'&&!pdfViewTwoUp)) ? (availW/baseW) : availW/(baseW/2);
+ const fullScale=fitScale;
+ const fullVp=p.getViewport({scale:fullScale,rotation:p.rotate||0});
+ const off=document.createElement('canvas');
+ let scaleD=dpr();
+ // Avoid excessive memory use when a fallback PDF is extremely tall or large.
+ if(RALLY_FORMAT==='LONGPDF'||RALLY_FORMAT==='PDFVIEW'){
+   const maxPixels=24000000;
+   scaleD=Math.min(scaleD,Math.max(.75,Math.sqrt(maxPixels/Math.max(1,fullVp.width*fullVp.height))));
+ }
+ off.width=Math.ceil(fullVp.width*scaleD);
+ off.height=Math.ceil(fullVp.height*scaleD);
+ const octx=off.getContext('2d');
+ octx.setTransform(scaleD,0,0,scaleD,0,0);
+ await p.render({canvasContext:octx,viewport:fullVp}).promise;
+ const c=$('pdfCanvas');
+ const fullH=off.height;
+ if(RALLY_FORMAT==='A5'||RALLY_FORMAT==='LONGPDF'||(RALLY_FORMAT==='PDFVIEW'&&!pdfViewTwoUp)){
+   c.width=off.width; c.height=off.height;
+   c.style.width=(off.width/scaleD)+'px'; c.style.height=(off.height/scaleD)+'px';
+   const ctx=c.getContext('2d'); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,off.width,off.height);
+   ctx.drawImage(off,0,0);
+ }else{
+   const halfW=Math.floor(off.width/2);
+   c.width=halfW; c.height=fullH;
+   c.style.width=(halfW/scaleD)+'px'; c.style.height=(fullH/scaleD)+'px';
+   const ctx=c.getContext('2d'); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,halfW,fullH);
+   const sx=m.side==='left'?0:(off.width-halfW);
+   ctx.drawImage(off,sx,0,halfW,fullH,0,0,halfW,fullH);
+ }
+ renderedZoom=zoom;panX=0;panY=0;applyPan();
+ ;
+}
+async function detectPdfTwoUpLayout(doc){
+  if(!doc||doc.numPages<2)return {twoUp:false,pages:[]};
+  const p1=await doc.getPage(1);
+  const raw=p1.getViewport({scale:1,rotation:0});
+  const shortSide=Math.min(raw.width,raw.height),longSide=Math.max(raw.width,raw.height);
+  const isLandscapeA4=Math.abs(shortSide-595.28)<12&&Math.abs(longSide-841.89)<18;
+  if(!isLandscapeA4)return {twoUp:false,pages:[]};
+  const sideInfo=[];
+  const n=Math.min(doc.numPages,3);
+  for(let i=1;i<=n;i++){
+    const pg=await doc.getPage(i);
+    const vp=pg.getViewport({scale:1,rotation:0});
+    const items=(await pg.getTextContent()).items||[];
+    let left='',right='';
+    const mid=vp.width/2;
+    for(const it of items){
+      const x=Number(it.transform?.[4])||0;
+      const txt=String(it.str||'').trim();
+      if(!txt)continue;
+      if(x<mid)left+=' '+txt; else right+=' '+txt;
+    }
+    const score=t=>((t.match(/\d+\.\d+/g)||[]).length)+(t.includes('KM-Total')?8:0)+(t.includes('Designation')?4:0)+(t.includes('東京横断ツーリング')?3:0);
+    sideInfo.push({left,right,ls:score(left),rs:score(right)});
+  }
+  const both=sideInfo.filter(x=>x.ls>=5&&x.rs>=5).length;
+  const firstRightOnly=sideInfo[0]?.ls<5&&sideInfo[0]?.rs>=8;
+  if(!(both>=1&&sideInfo.length>=2))return {twoUp:false,pages:[]};
+  const pages=[];
+  if(firstRightOnly)pages.push({pdf:1,side:'right'});
+  else {pages.push({pdf:1,side:'left'},{pdf:1,side:'right'});}
+  for(let i=2;i<=doc.numPages;i++){pages.push({pdf:i,side:'left'},{pdf:i,side:'right'});}
+  return {twoUp:true,pages};
+}
+async function detectPdfFormat(doc,name=''){
+  const p=await doc.getPage(1);
+  const raw=p.getViewport({scale:1,rotation:0});
+  const shortSide=Math.min(raw.width,raw.height), longSide=Math.max(raw.width,raw.height);
+  const isA5=Math.abs(shortSide-419.53)<12 && Math.abs(longSide-595.28)<12;
+  const isA4=Math.abs(shortSide-595.28)<12 && Math.abs(longSide-841.89)<18;
+
+  // A4 paper size alone is NOT enough to select the built-in A4 route.
+  // The app's A4 route data is tied to the bundled Komaren Classic 2026
+  // roadbook. Other A4-sized organizer PDFs must remain display-only so
+  // their distances are never incorrectly shown as our internal route.
+  let isKnownA4=false;
+  if(isA4){
+    try{
+      const tc=await p.getTextContent();
+      const text=(tc.items||[]).map(x=>x.str||'').join(' ');
+      isKnownA4=/コマ練Classic2026/.test(text) && /KM-TOTAL/.test(text) && /KM-INTER/.test(text);
+    }catch(e){isKnownA4=false;}
+  }
+
+  // Any non-A4/A5 PDF, and any A4 PDF not matching the bundled A4 roadbook,
+  // is accepted as display-only fallback. This is the universal behavior for
+  // unfamiliar organizer formats.
+  const isLongSinglePage=doc.numPages===1 && raw.height>1200 && raw.height/raw.width>2.0;
+  if(isA5)return 'A5';
+  if(isKnownA4)return 'A4';
+  if(isLongSinglePage)return 'LONGPDF';
+  return 'PDFVIEW';
+}
+async function loadBytes(buf,name,preserveSession=false,mode='AUTO'){
+  pdfViewLayout='single';pdfViewPages=[];
+  let doc;
+  try{doc=await pdfjsLib.getDocument({data:buf}).promise;}catch(err){setStatus('PDF LOAD ERROR: '+(err?.message||err));console.error(err);return false;}
+  try{
+    const detected=mode==='PDFVIEW'?'PDFVIEW':await detectPdfFormat(doc,name);
+    const twoUpInfo=(detected==='PDFVIEW'||detected==='LONGPDF')?await detectPdfTwoUpLayout(doc):{twoUp:false,pages:[]};
+    if(mode==='KOMA'){
+      const p=await doc.getPage(1);
+      const raw=p.getViewport({scale:1,rotation:0});
+      const shortSide=Math.min(raw.width,raw.height), longSide=Math.max(raw.width,raw.height);
+      const isA5=Math.abs(shortSide-419.53)<12 && Math.abs(longSide-595.28)<12;
+      const isA4=Math.abs(shortSide-595.28)<12 && Math.abs(longSide-841.89)<18;
+      const knownA4=detected==='A4';
+      if(!isA5&&!knownA4){
+        setStatus('コマ練解析対象外 / 読み込み中止');
+        return false;
+      }
+    }
+    if(detected==='A5'){
+      try{
+        const parsed=await parseA5Pdf(doc);
+        RALLY_FORMAT='A5';
+        ROUTE=parsed.route;
+        ROUTE_META={...parsed.meta,source:name};
+        logicalCount=ROUTE_META.roadbook_pages;
+        setStatus(`A5 AUTO PARSED / RB ${ROUTE.length} / ${fmtKm(ROUTE.at(-1)?.dist||0)} km`);
+      }catch(a5err){
+        // In explicit KomaRen mode, never silently switch to display-only.
+        // The user selected parsing, so an unsupported A5 layout is a hard
+        // load failure and the previously loaded route remains untouched.
+        if(mode==='KOMA'){
+          setStatus('コマ練解析失敗 / PDF表示モードを選択してください');
+          console.warn('Explicit KomaRen mode rejected A5 layout.',a5err);
+          return false;
+        }
+        // In AUTO mode, an unsupported A5 layout falls back to display-only.
+        RALLY_FORMAT='PDFVIEW';
+        pdfViewLayout=twoUpInfo.twoUp?'twoUp':'single';
+        pdfViewPages=twoUpInfo.pages;
+        ROUTE=[{no:1,dist:0,inter:0,page:1,logicalPage:1,side:'full',pdfPage:1,row:1,rowCenterRatio:0.5,total_source:'none'}];
+        ROUTE_META={format:'PDFVIEW',source:name,pages_total:doc.numPages,roadbook_pages:doc.numPages,rows:0,derived_total_count:0,parseFallback:'A5 parser rejected layout'};
+        logicalCount=pdfViewLayout==='twoUp'?pdfViewPages.length:doc.numPages;
+        setStatus(`PDF DISPLAY / ${pdfViewLayout==='twoUp'?pdfViewPages.length+'面 / 2面表示':doc.numPages+' page'} / 距離パースなし`);
+        console.warn('A5 parser rejected layout; using PDF display fallback.',a5err);
+      }
+    }else if(detected==='LONGPDF'||detected==='PDFVIEW'){
+      RALLY_FORMAT=detected;
+      pdfViewLayout=detected==='PDFVIEW'&&twoUpInfo.twoUp?'twoUp':'single';
+      pdfViewPages=twoUpInfo.pages;
+      ROUTE=[{no:1,dist:0,inter:0,page:1,logicalPage:1,side:'full',pdfPage:1,row:1,rowCenterRatio:0.5,total_source:'none'}];
+      ROUTE_META={format:detected,source:name,pages_total:doc.numPages,roadbook_pages:doc.numPages,rows:0,derived_total_count:0};
+      logicalCount=(detected==='PDFVIEW'&&pdfViewLayout==='twoUp')?pdfViewPages.length:doc.numPages;
+      setStatus(`${detected==='LONGPDF'?'LONG PDF':'PDF DISPLAY'} / ${detected==='PDFVIEW'&&pdfViewLayout==='twoUp'?pdfViewPages.length+'面 / 2面表示':doc.numPages+' page'} / 距離パースなし`);
+    }else{
+      RALLY_FORMAT='A4';
+      ROUTE=A4_ROUTE;
+      ROUTE_META={format:'A4',source:name,pages_total:doc.numPages,roadbook_pages:doc.numPages*2-1,rows:A4_ROUTE.length,derived_total_count:0};
+      logicalCount=logicalCountForDocForFormat(doc,'A4');
+      setStatus(`A4 AUTO / RB ${ROUTE.length} / ${fmtKm(ROUTE.at(-1)?.dist||0)} km`);
+    }
+  }catch(err){setStatus('PDF PARSE ERROR: '+(err?.message||err));console.error(err);return false;}
+  pdf=doc;
+  if($('emptyRoadbook'))$('emptyRoadbook').style.display='none';
+  pdfPanHistory=new Map();
+  logicalPage=1;page=1;rb=0;stageStarted=false;running=false;timerStart=null;elapsedMs=0;gpsLast=null;gpsDistance=0;gpsRawDistance=0;gpsDistanceRate=1;gpsCorrectionRate=100;gpsLostAnchor=null;reverseMode=false;reverseDistanceKm=0;portraitFallbackKomaStepPx=0;$('gpsCorrValue').textContent='100.0%';totalZeroBase=0;totalOffset=0;legBase=0;legOffset=0;zoom=1;panX=0;panY=0;pdfStepRate=100;portraitPdfStepCorrection=100;
+  if(!preserveSession&&APP_MODE!=='PDF_VIEW')clearSession();
+  await releaseWakeLock();
+  await renderPage();
+  $('startBtn').textContent='START';$('time').textContent='00:00:00';setRB(0,false);
+  refreshPortraitRallyView(true);
+  return true;
+}
+async function moveLogical(d,restorePdfPan=false){
+  const target=clamp(logicalPage+d,1,logicalCount);
+  if(target===logicalPage)return false;
+  if(isFallbackPdf())rememberPdfPan();
+  logicalPage=target;page=mapping(logicalPage).pdf;zoom=1;panX=0;panY=0;
+  await renderPage();
+  if(restorePdfPan&&isFallbackPdf()&&pdfPanHistory.has(logicalPage)){
+    panY=pdfPanHistory.get(logicalPage);
+    applyPan();
+  }
+  return true;
+}
+async function moveLogicalContinuous(d){
+  const target=clamp(logicalPage+d,1,logicalCount);
+  if(target===logicalPage)return false;
+  if(isFallbackPdf())rememberPdfPan();
+  logicalPage=target;page=mapping(logicalPage).pdf;zoom=1;panX=0;panY=0;
+  await renderPage();
+  // Continuous map-winder behavior: when NEXT crosses to the next page,
+  // enter at that page's top; when BACK crosses to the previous page,
+  // enter at that page's bottom so the motion feels continuous instead of
+  // jumping to the previous page's top.
+  const b=panBounds();
+  panY=d>0?b.maxY:b.minY;
+  applyPan();
+  rememberPdfPan();
+  return true;
+}
+function moveRB(d,doAuto=true){const next=clamp(rb+d,0,ROUTE.length-1);setRB(next,doAuto)}
+function openPdfLoadModal(name){$('pdfLoadName').textContent=name||'';const m=$('pdfLoadModal');m.classList.add('open');m.setAttribute('aria-hidden','false')}
+function closePdfLoadModal(){const m=$('pdfLoadModal');m.classList.remove('open');m.setAttribute('aria-hidden','true');pendingPdfBuffer=null;pendingPdfName=''}
+async function choosePdfLoadMode(mode){if(!pendingPdfBuffer)return;const buf=pendingPdfBuffer,name=pendingPdfName;closePdfLoadModal();const effectiveMode=APP_MODE==='PDF_VIEW'?'PDFVIEW':mode;const ok=await loadBytes(buf,name,false,effectiveMode);if(!ok)console.warn('PDF load did not complete.',{mode:effectiveMode,name});}
+$('modeBtn').onclick=openAppModeModal;
+$('chooseRallyMode').onclick=()=>{$('rallyOrientationChoice').hidden=false};
+$('choosePortrait').onclick=()=>selectAppMode('RALLYCON','PORTRAIT');
+$('chooseLandscape').onclick=()=>selectAppMode('RALLYCON','LANDSCAPE');
+$('choosePdfViewMode').onclick=()=>selectAppMode('PDF_VIEW','AUTO');
+$('cancelAppMode').onclick=closeAppModeModal;
+$('loadBtn').onclick=()=>$('pdfFile').click();$('pdfFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{pendingPdfBuffer=await f.arrayBuffer();pendingPdfName=f.name;if(APP_MODE==='PDF_VIEW'){const buf=pendingPdfBuffer,name=pendingPdfName;pendingPdfBuffer=null;pendingPdfName='';const ok=await loadBytes(buf,name,false,'PDFVIEW');if(!ok)console.warn('PDF VIEW load did not complete.',{name})}else openPdfLoadModal(f.name)}catch(err){setStatus('PDF READ ERROR: '+(err?.message||err));console.error(err)}finally{e.target.value=''}};
+$('pdfLoadAuto').onclick=()=>choosePdfLoadMode('AUTO');$('pdfLoadKoma').onclick=()=>choosePdfLoadMode('KOMA');$('pdfLoadView').onclick=()=>choosePdfLoadMode('PDFVIEW');$('pdfLoadCancel').onclick=closePdfLoadModal;$('pdfLoadModal').addEventListener('click',e=>{if(e.target.id==='pdfLoadModal')closePdfLoadModal()});
+$('pagePrev').onclick=()=>moveLogical(-1);$('pageNext').onclick=()=>moveLogical(1);
+function isFallbackPdf(){return RALLY_FORMAT==='LONGPDF'||RALLY_FORMAT==='PDFVIEW'}
+function pdfScrollStep(direction){
+  if(!isFallbackPdf())return false;
+  const st=$('stage');
+  if(!st||!st.clientHeight)return false;
+  const step=st.clientHeight*(pdfStepRate/100);
+  const before=panY;
+  panY+=direction*step;
+  applyPan();
+  return Math.abs(panY-before)>0.1;
+}
+function pdfMoveDisplayUnit(direction){
+  if(!isFallbackPdf())return false;
+  const moved=pdfScrollStep(direction);
+  if(moved){rememberPdfPan();return true}
+  const delta=direction<0?1:-1;
+  const target=clamp(logicalPage+delta,1,logicalCount);
+  if(target===logicalPage)return false;
+  // When crossing a page/display-unit boundary, remember the exact position
+  // reached on the page we are leaving. Returning across the boundary restores
+  // that position instead of jumping to the previous page's top.
+  rememberPdfPan();
+  moveLogical(delta,true);
+  return true;
+}
+$('backBtn').onclick=()=>{
+  if(isPortraitFallback()&&portraitFallbackReady){portraitFallbackScrollStep(-1);return}
+  if(isFallbackPdf())pdfMoveDisplayUnit(1);else moveRB(-1)
+};
+$('nextBtn').onclick=()=>{
+  if(isPortraitFallback()&&portraitFallbackReady){portraitFallbackScrollStep(1);return}
+  if(isFallbackPdf())pdfMoveDisplayUnit(-1);else moveRB(1)
+};
+$('autoBtn').onclick=()=>{autoNext=!autoNext;$('autoBtn').textContent='AUTO: '+(autoNext?'ON':'OFF')};
+function toggleReverseMode(){
+  if(!stageStarted||!running){setStatus('REVは走行中のみ使用できます');return}
+  if(gpsWatchId===null){setStatus('REVにはGPSが必要です');return}
+  reverseMode=!reverseMode;
+  reverseDistanceKm=0;
+  if(reverseMode){setStatus('REV ON / TOTALを逆方向へ')}else{setStatus(gpsWatchId!==null?'GPS RUN':'GPS PAUSE')}
+  display();
+}
+$('reverseBtn').onclick=toggleReverseMode;
+let pdfStepHoldTimer=null,pdfStepHoldTriggered=false,pdfStepSuppressClick=false;
+function isPdfContinuousEligible(){
+  // Prototype v0.8.25: continuous “map-winder” scrolling is limited to
+  // fallback PDF display mode. Recognized KomaRen navigation remains untouched.
+  return isFallbackPdf() && stageStarted && running;
+}
+function continuousPdfSpeed(elapsedMs){
+  // v0.8.27: slow the prototype down another step for a gentler electric
+  // map-holder feel. Keep the same gradual acceleration shape.
+  const t=Math.min(1,Math.max(0,elapsedMs)/1500);
+  return 55 + 105*t; // px/s: 55 -> 160
+}
+function stopPdfContinuousScroll(){
+  if(pdfContinuousTimer){clearTimeout(pdfContinuousTimer);pdfContinuousTimer=null}
+  if(pdfContinuousRAF){cancelAnimationFrame(pdfContinuousRAF);pdfContinuousRAF=null}
+  pdfContinuousDirection=0;pdfContinuousStartedAt=0;pdfContinuousLastTs=0;pdfContinuousPageChanging=false;
+}
+function applyPdfContinuousFrame(ts){
+  if(!pdfContinuousDirection||!isPdfContinuousEligible()){stopPdfContinuousScroll();return}
+  if(!pdfContinuousLastTs)pdfContinuousLastTs=ts;
+  const dt=Math.min(.05,Math.max(0,(ts-pdfContinuousLastTs)/1000));
+  pdfContinuousLastTs=ts;
+  const speed=continuousPdfSpeed(ts-pdfContinuousStartedAt);
+  const d=pdfContinuousDirection*speed*dt;
+  if(isPortraitFallback()&&portraitFallbackReady){
+    const st=$('portraitRallyScroll');
+    if(st){
+      const before=st.scrollTop;
+      st.scrollTop=Math.max(0,Math.min(st.scrollHeight-st.clientHeight,before+d));
+      // Connected portrait pages form one continuous strip; no logical-page jump is needed.
+    }
+  }else{
+    // Landscape fallback PDFs scroll inside the existing stage/canvas.
+    // NEXT moves the page upward (panY decreases); BACK moves it downward.
+    // When BACK crosses a page boundary, enter the previous page at its
+    // bottom edge. This prevents the previous-page TOP jump seen in v0.8.27
+    // and keeps the electric map-holder feeling continuous.
+    if(!pdfContinuousPageChanging){
+      const before=panY;
+      const requested=-d;
+      panY+=requested;
+      applyPan();
+      const actual=panY-before;
+      const hitEdge=Math.abs(actual-requested)>0.01;
+      if(hitEdge){
+        const pageDelta=pdfContinuousDirection>0?1:-1;
+        const target=clamp(logicalPage+pageDelta,1,logicalCount);
+        if(target!==logicalPage){
+          pdfContinuousPageChanging=true;
+          moveLogicalContinuous(pageDelta).catch(err=>console.error('continuous PDF page change failed',err)).finally(()=>{pdfContinuousPageChanging=false});
+        }
+      }else rememberPdfPan();
+    }
+  }
+  pdfContinuousRAF=requestAnimationFrame(applyPdfContinuousFrame);
+}
+function startPdfContinuousScroll(direction){
+  if(!isPdfContinuousEligible())return false;
+  stopPdfContinuousScroll();
+  pdfContinuousDirection=direction;
+  pdfContinuousTriggered=true;
+  pdfContinuousSuppressClick=true;
+  pdfContinuousStartedAt=performance.now();
+  pdfContinuousLastTs=0;
+  pdfContinuousRAF=requestAnimationFrame(applyPdfContinuousFrame);
+  setStatus('PDF 巻き取り '+(direction>0?'NEXT':'BACK'));
+  return true;
+}
+$('nextBtn').addEventListener('contextmenu',e=>e.preventDefault());
+function armPdfStepOrContinuous(btn,direction){
+  // v0.8.31: when continuous scrolling was active, keep the following click
+  // suppressed until the onclick handler consumes the flag. Resetting it from
+  // a 0ms timer after pointerup could race the browser's synthesized click and
+  // cause one extra pdfMoveDisplayUnit() jump on release.
+  // Bind once at startup; the PDF mode may be selected later by the load modal.
+  btn.addEventListener('pointerdown',e=>{
+    if(!isFallbackPdf())return;
+    e.preventDefault();
+    pdfStepHoldTriggered=false;pdfStepSuppressClick=false;
+    stopPdfContinuousScroll();
+    try{btn.setPointerCapture?.(e.pointerId)}catch(err){}
+    if(stageStarted&&running){
+      // During a run, long press is the electric map-holder motion.
+      pdfStepHoldTimer=setTimeout(()=>{
+        pdfStepHoldTriggered=true;
+        startPdfContinuousScroll(direction);
+      },450);
+    }else{
+      // Before START, preserve the existing 0.7 s settings long press.
+      pdfStepHoldTimer=setTimeout(()=>{
+        pdfStepHoldTriggered=true;
+        pdfStepSuppressClick=true;
+        openPdfStepModal();
+      },700);
+    }
+  });
+  btn.addEventListener('pointerup',e=>{
+    if(!isFallbackPdf())return;
+    e.preventDefault();
+    clearTimeout(pdfStepHoldTimer);pdfStepHoldTimer=null;
+    if(pdfContinuousDirection){stopPdfContinuousScroll();e.stopPropagation();/* Keep suppression armed until the click handler consumes it. */}
+    if(pdfStepHoldTriggered)e.stopPropagation();
+  });
+  btn.addEventListener('pointercancel',()=>{
+    clearTimeout(pdfStepHoldTimer);pdfStepHoldTimer=null;
+    stopPdfContinuousScroll();pdfStepHoldTriggered=false;pdfStepSuppressClick=false;
+  });
+  btn.addEventListener('lostpointercapture',()=>{
+    clearTimeout(pdfStepHoldTimer);pdfStepHoldTimer=null;
+    stopPdfContinuousScroll();pdfStepHoldTriggered=false;pdfStepSuppressClick=false;
+  });
+}
+armPdfStepOrContinuous($('backBtn'),-1);
+armPdfStepOrContinuous($('nextBtn'),1);
+$('nextBtn').onclick=()=>{
+  if(pdfStepSuppressClick||pdfContinuousSuppressClick){pdfStepSuppressClick=false;pdfContinuousSuppressClick=false;pdfStepHoldTriggered=false;return}
+  if(isPortraitFallback()&&portraitFallbackReady){portraitFallbackScrollStep(1);return}
+  if(isFallbackPdf())pdfMoveDisplayUnit(-1);else moveRB(1)
+};
+$('backBtn').onclick=()=>{
+  if(pdfStepSuppressClick||pdfContinuousSuppressClick){pdfStepSuppressClick=false;pdfContinuousSuppressClick=false;pdfStepHoldTriggered=false;return}
+  if(isPortraitFallback()&&portraitFallbackReady){portraitFallbackScrollStep(-1);return}
+  if(isFallbackPdf())pdfMoveDisplayUnit(1);else moveRB(-1)
+};
+function syncRBToTotal(){
+  if(!Array.isArray(ROUTE)||!ROUTE.length)return;
+  const total=getTotalKm();
+  let next=ROUTE.length-1;
+  for(let i=0;i<ROUTE.length;i++){
+    const distance=Number(ROUTE[i]?.dist);
+    if(Number.isFinite(distance)&&distance>total+1e-9){next=i;break}
+  }
+  if(next!==rb)setRB(next,false);
+}
+function adjustTotal(delta){totalOffset+=delta;if(delta<0)syncRBToTotal();display();checkAutoNext()}
+function zeroTotal(){totalZeroBase=gpsDistance;totalOffset=0;display();checkAutoNext()}
+function adjustLeg(delta){legOffset+=delta;display(false)}
+function zeroLeg(){legBase=gpsDistance;legOffset=0;display(false)}
+function holdAdjustStep(elapsedMs){
+  if(elapsedMs<1000)return 0.01;
+  if(elapsedMs<2500)return 0.05;
+  if(elapsedMs<4500)return 0.10;
+  return 0.50;
+}
+function bindHoldAdjust(id,delta,holdMs=550,repeatMs=300){
+  const el=$(id);let timer=null,interval=null,held=false,suppressClick=false,holdStarted=0;
+  const stop=()=>{clearTimeout(timer);clearInterval(interval);timer=null;interval=null;holdStarted=0};
+  el.addEventListener('pointerdown',e=>{
+    e.preventDefault();held=false;suppressClick=false;stop();
+    try{el.setPointerCapture?.(e.pointerId)}catch(err){}
+    timer=setTimeout(()=>{
+      held=true;suppressClick=true;holdStarted=performance.now();
+      interval=setInterval(()=>delta(holdAdjustStep(performance.now()-holdStarted)),repeatMs);
+    },holdMs);
+  });
+  el.addEventListener('pointerup',e=>{e.preventDefault();stop();if(held){e.stopPropagation();held=false}});
+  el.addEventListener('pointercancel',e=>{stop();held=false;suppressClick=false});
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+  el.onclick=e=>{e.preventDefault();if(suppressClick){suppressClick=false;return}delta(0.01)};
+}
+function parseDistanceInput(label,current){
+  const raw=window.prompt(`${label}をkmで入力してください`,fmtKm(current));
+  if(raw===null)return null;
+  const value=Number(String(raw).trim().replace(',','.'));
+  if(!Number.isFinite(value)||value<0){window.alert('0以上の数値を入力してください。');return null}
+  return value;
+}
+function setTotalDirect(){
+  const current=getTotalKm(),value=parseDistanceInput('TOTAL',current);
+  if(value===null)return;
+  totalOffset=value-(gpsDistance-totalZeroBase);
+  display();checkAutoNext();
+}
+function setLegDirect(){
+  const current=getLegKm(),value=parseDistanceInput('LEG',current);
+  if(value===null)return;
+  legOffset=value-(gpsDistance-legBase);
+  display(false);
+}
+function bindHoldReset(id,resetFn,holdMs=700,confirmReset=true){
+  const el=$(id);let timer=null,held=false,suppressClick=false;
+  const stop=()=>{clearTimeout(timer);timer=null};
+  el.addEventListener('pointerdown',e=>{
+    e.preventDefault();held=false;stop();
+    try{el.setPointerCapture?.(e.pointerId)}catch(err){}
+    timer=setTimeout(async()=>{
+      held=true;suppressClick=true;
+      if(confirmReset){
+        const ok=window.confirm(id==='totalZero'?'TOTALを0にリセットしますか？':'LEGを0にリセットしますか？');
+        if(ok)resetFn();
+      }else{
+        resetFn();
+      }
+    },holdMs);
+  });
+  el.addEventListener('pointerup',e=>{e.preventDefault();stop();if(held){e.stopPropagation();held=false}});
+  el.addEventListener('pointercancel',stop);
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+  el.onclick=e=>{e.preventDefault();if(suppressClick){suppressClick=false;return}};
+}
+bindHoldAdjust('totalMinus',step=>adjustTotal(-step));
+bindHoldAdjust('totalPlus',step=>adjustTotal(step));
+bindHoldAdjust('legMinus',step=>adjustLeg(-step));
+bindHoldAdjust('legPlus',step=>adjustLeg(step));
+function bindHoldInput(id,inputFn,holdMs=700){
+  const el=$(id);let timer=null,held=false,suppressClick=false;
+  const stop=()=>{clearTimeout(timer);timer=null};
+  el.addEventListener('pointerdown',e=>{
+    e.preventDefault();held=false;suppressClick=false;stop();
+    try{el.setPointerCapture?.(e.pointerId)}catch(err){}
+    timer=setTimeout(()=>{
+      held=true;suppressClick=true;inputFn();
+    },holdMs);
+  });
+  el.addEventListener('pointerup',e=>{
+    e.preventDefault();stop();
+    if(held){e.stopPropagation();held=false}
+  });
+  el.addEventListener('pointercancel',()=>{stop();held=false;suppressClick=false});
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+  el.onclick=e=>{e.preventDefault();if(suppressClick){suppressClick=false;return}};
+}
+bindHoldInput('total',setTotalDirect);
+bindHoldInput('leg',setLegDirect);
+bindHoldReset('totalZero',zeroTotal,700,true);
+bindHoldReset('legZero',zeroLeg,700,false);
+// v0.8.45: portrait TOTAL distance frame remains the only touch area for
+// distance correction. Left/right zones = -/+10 m per tap and continuous
+// adjustment while held. The center zone is reserved for long-press reset.
+// Keeping the reset zone centered prevents overlap with the +/- touch zones.
+// The handler is isolated to the HUD frame so PDF touch/scroll is untouched.
+(function bindPortraitTotalDistance(){
+  const box=$('portraitTotalBox');
+  if(!box)return;
+  const ADJUST_HOLD_MS=550;
+  const RESET_HOLD_MS=700;
+  const REPEAT_MS=300;
+  const CENTER_RATIO=0.40; // center 40% = reset zone; left/right 30% each
+  let timer=null,interval=null,zone='',holding=false,suppressTap=false,holdStarted=0,pointerId=null;
+  const stop=()=>{
+    clearTimeout(timer);clearInterval(interval);
+    timer=null;interval=null;holdStarted=0;pointerId=null;
+  };
+  const zoneAt=(clientX)=>{
+    const rect=box.getBoundingClientRect();
+    const x=Math.max(0,Math.min(rect.width,clientX-rect.left));
+    const centerStart=rect.width*(1-CENTER_RATIO)/2;
+    const centerEnd=rect.width*(1+CENTER_RATIO)/2;
+    if(x<centerStart)return'left';
+    if(x>centerEnd)return'right';
+    return'center';
+  };
+  box.addEventListener('contextmenu',e=>e.preventDefault());
+  box.addEventListener('pointerdown',e=>{
+    if(!window.matchMedia?.('(orientation: portrait)').matches)return;
+    e.preventDefault();e.stopPropagation();
+    stop();holding=false;suppressTap=false;zone=zoneAt(e.clientX);pointerId=e.pointerId;
+    try{box.setPointerCapture?.(e.pointerId)}catch(err){}
+    const holdMs=zone==='center'?RESET_HOLD_MS:ADJUST_HOLD_MS;
+    timer=setTimeout(()=>{
+      holding=true;suppressTap=true;holdStarted=performance.now();
+      if(zone==='center'){
+        zeroTotal();
+        return;
+      }
+      const direction=zone==='left'?-1:1;
+      interval=setInterval(()=>adjustTotal(direction*holdAdjustStep(performance.now()-holdStarted)),REPEAT_MS);
+    },holdMs);
+  });
+  box.addEventListener('pointerup',e=>{
+    if(!window.matchMedia?.('(orientation: portrait)').matches)return;
+    e.preventDefault();e.stopPropagation();
+    const wasHolding=holding,currentZone=zone;
+    stop();
+    if(wasHolding){holding=false;zone='';return}
+    if(suppressTap){suppressTap=false;zone='';return}
+    if(currentZone==='left')adjustTotal(-0.01);
+    else if(currentZone==='right')adjustTotal(0.01);
+    zone='';
+  });
+  box.addEventListener('pointercancel',e=>{
+    e.preventDefault();e.stopPropagation();
+    stop();holding=false;suppressTap=false;zone='';
+  });
+  box.addEventListener('lostpointercapture',()=>{
+    stop();holding=false;suppressTap=false;zone='';
+  });
+})();
+
+
+let resetHoldTimer=null;
+let resetHoldTriggered=false;
+$('startBtn').addEventListener('contextmenu',e=>e.preventDefault());
+$('startBtn').addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  resetHoldTriggered=false;
+  clearTimeout(resetHoldTimer);
+  resetHoldTimer=setTimeout(async()=>{
+    resetHoldTriggered=true;
+    await resetRally();
+  },1600);
+});
+$('startBtn').addEventListener('pointerup',e=>{e.preventDefault();clearTimeout(resetHoldTimer)});
+$('startBtn').addEventListener('pointercancel',()=>clearTimeout(resetHoldTimer));
+$('startBtn').onclick=async()=>{
+  if(resetHoldTriggered){resetHoldTriggered=false;return}
+  if(!running){
+    // Remember whether this is a resume after STOP. A resumed stage must
+    // keep the user's current portrait PDF scroll position.
+    const resumeExistingStage=stageStarted;
+    if(!stageStarted){
+      stageStarted=true;
+      totalZeroBase=gpsDistance;
+      totalOffset=0;
+      legBase=gpsDistance;
+      legOffset=0;
+      elapsedMs=0;
+      reverseMode=false;
+      reverseDistanceKm=0;
+      if(ROUTE.length>1) setRB(1,false);
+      else display(false);
+    }
+    timerStart=performance.now();
+    gpsLast=null;
+    gpsLostAnchor=null;
+    running=true;
+    $('startBtn').textContent='STOP';
+    await requestWakeLock();
+    setStatus(gpsWatchId!==null?'GPS RUN':'GPS未接続');
+    if(!resumeExistingStage && window.matchMedia?.('(orientation: portrait)').matches){
+      // Only a brand-new stage starts at the first page. On START after STOP,
+      // leave the already displayed PDF viewport exactly where the rider left it.
+      if(isPortraitFallback()&&portraitFallbackReady){
+        fitPortraitFallbackFirstPageToBottom();
+        const pe=portraitRallyEls(); if(pe.scroll)pe.scroll.scrollTop=0;
+      }else refreshPortraitRallyView(false);
+    }
+    saveSession();
+  }else{
+    if(timerStart){elapsedMs+=performance.now()-timerStart;timerStart=null}
+    running=false;
+    gpsLast=null;
+    gpsLostAnchor=null;
+    reverseMode=false;
+    reverseDistanceKm=0;
+    $('startBtn').textContent='START';
+    await releaseWakeLock();
+    setStatus(gpsWatchId!==null?'GPS PAUSE':'READY');
+    // STOP must preserve the user's current portrait PDF scroll position.
+    // The already-built portrait view does not need a refresh when only
+    // running/stopped state changes; refreshPortraitRallyView() fits the
+    // fallback view to page 1 and resets scrollTop to 0.
+    saveSession();
+  }
+};
+let gpsWatchId=null;
+let gpsActive=false;
+let gpsLast=null;
+let gpsLostAnchor=null;
+let gpsTotalMeters=0;
+let gpsSampleCount=0;
+let gpsLost=false;
+let gpsUserEnabled=false;
+let hiddenAt=0;
+let resumeFixPending=false;
+let resumeSequence=0;
+let lastResumeAt=0;
+let gpsDistanceRate=1;
+let gpsCorrectionRate=100;
+const GPS_MAX_ACCURACY=80;
+const GPS_MIN_MOVE_M=1.5;
+const GPS_MAX_SPEED_KMH=180;
+const GPS_LOST_TIMEOUT_SEC=5;
+const GPS_MAX_RECOVERY_GAP_SEC=600;
+function haversineMeters(a,b){
+  const R=6371000, r=Math.PI/180;
+  const dLat=(b.lat-a.lat)*r, dLon=(b.lon-a.lon)*r;
+  const la1=a.lat*r, la2=b.lat*r;
+  const x=Math.sin(dLat/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.min(1,Math.sqrt(x)));
+}
+function resetGpsReference(pos){
+  gpsLast={lat:pos.lat,lon:pos.lon,t:performance.now(),accuracy:pos.accuracy};
+}
+function gpsDistanceKm(){return gpsRawDistance}
+function setGpsCorrectionRate(percent){
+  const next=clamp(Math.round((Number(percent)||100)*10)/10,50,150);
+  gpsCorrectionRate=next;
+  gpsDistanceRate=next/100;
+  $('gpsCorrValue').textContent=`${next.toFixed(1)}%`;
+  if($('gpsCorrModalValue'))$('gpsCorrModalValue').textContent=`${next.toFixed(1)}%`;
+  display(false);
+  saveSession();
+}
+function adjustGpsCorrection(delta){setGpsCorrectionRate(gpsCorrectionRate+delta)}
+function markGpsLost(){
+  if(!gpsLost){
+    gpsLost=true;
+    // Freeze the last good coordinate at the moment GPS is declared LOST.
+    // Distance is intentionally not estimated while the signal is unavailable.
+    gpsLostAnchor=gpsLast?{lat:gpsLast.lat,lon:gpsLast.lon,t:gpsLast.t,accuracy:gpsLast.accuracy}:null;
+    setStatus('GPS LOST');
+  }
+}
+function markGpsRecovered(accuracy){
+  gpsLost=false;
+  gpsLostAnchor=null;
+  setStatus(`GPS ±${Math.round(accuracy)}m`);
+}
+function handleGpsPosition(pos){
+  const now=performance.now(), c=pos.coords;
+  const accuracy=Number.isFinite(c.accuracy)&&c.accuracy>0?c.accuracy:999;
+  const speed=Number.isFinite(c.speed)&&c.speed>=0?c.speed*3.6:0;
+  lastTs={lat:c.latitude,lon:c.longitude,t:now,speed};
+  gpsSampleCount++;
+
+  if(!gpsActive){
+    gpsActive=true;
+    gpsRawDistance=gpsDistanceKm();
+    gpsDistance=gpsRawDistance;
+    resetGpsReference({lat:c.latitude,lon:c.longitude,accuracy});
+    gpsLostAnchor=null;
+    markGpsRecovered(accuracy);
+    display();
+    return;
+  }
+
+  const current={lat:c.latitude,lon:c.longitude,t:now,accuracy};
+  if(!gpsLast){
+    resetGpsReference(current);
+    gpsLostAnchor=null;
+    markGpsRecovered(accuracy);
+    display();
+    return;
+  }
+
+  // Poor fixes are not allowed to become distance anchors.
+  if(accuracy>GPS_MAX_ACCURACY){
+    markGpsLost();
+    display();
+    return;
+  }
+
+  // Once LOST, keep the frozen last-good point until a valid fix returns.
+  // This makes recovery a distinct one-time correction instead of ordinary
+  // segment accumulation.  The correction is straight-line distance between
+  // the last good point before LOST and the first good point after recovery.
+  if(gpsLost){
+    const anchor=gpsLostAnchor||gpsLast;
+    const dt=(now-anchor.t)/1000;
+    if(dt<=0){
+      gpsLast=current;
+      markGpsRecovered(accuracy);
+      display();
+      return;
+    }
+    if(dt>GPS_MAX_RECOVERY_GAP_SEC){
+      // Too long to make a safe distance estimate: re-anchor instead of guessing.
+      gpsLast=current;
+      markGpsRecovered(accuracy);
+      display();
+      return;
+    }
+    const meters=haversineMeters(anchor,current);
+    const impliedKmh=(meters/dt)*3.6;
+    if(impliedKmh<=GPS_MAX_SPEED_KMH){
+      if(stageStarted && running && meters>=GPS_MIN_MOVE_M){
+        const correctedKm=meters/1000*gpsDistanceRate;
+        gpsTotalMeters+=meters;
+        gpsRawDistance=gpsDistanceKm();
+        if(reverseMode){
+          gpsDistance=Math.max(0,gpsDistance-correctedKm);
+          reverseDistanceKm+=correctedKm;
+        }else{
+          gpsDistance+=correctedKm;
+        }
+      }
+      gpsLast=current;
+      markGpsRecovered(accuracy);
+      // v0.8.30: recovery feedback is painted without waiting for the
+      // session localStorage write. The write is deferred so the browser can
+      // render the corrected TOTAL/status immediately after the GPS callback.
+      display(false);
+      setTimeout(saveSession,0);
+      return;
+    }else{
+      // Recovery jump is implausible: discard it and use the current good fix
+      // as the new anchor. No distance is added for this sample.
+      gpsLast=current;
+      markGpsLost();
+    }
+    display();
+    return;
+  }
+
+  const dt=(now-gpsLast.t)/1000;
+  if(dt<=0)return;
+  if(dt>GPS_MAX_RECOVERY_GAP_SEC){
+    // Too long to make a safe distance estimate: re-anchor instead of guessing.
+    resetGpsReference(current);
+    markGpsRecovered(accuracy);
+    display();
+    return;
+  }
+
+  const meters=haversineMeters(gpsLast,current);
+  const impliedKmh=(meters/dt)*3.6;
+
+  if(impliedKmh<=GPS_MAX_SPEED_KMH){
+    if(stageStarted && running && meters>=GPS_MIN_MOVE_M){
+      const correctedKm=meters/1000*gpsDistanceRate;
+      gpsTotalMeters+=meters;
+      gpsRawDistance=gpsDistanceKm();
+      if(reverseMode){
+        gpsDistance=Math.max(0,gpsDistance-correctedKm);
+        reverseDistanceKm+=correctedKm;
+      }else{
+        gpsDistance+=correctedKm;
+      }
+    }
+    gpsLast=current;
+    markGpsRecovered(accuracy);
+  }else{
+    // Reject the jump while preserving the previous good anchor so that, if
+    // the next fix is valid, the LOST→RECOVERY path can handle the gap once.
+    markGpsLost();
+  }
+
+  display();
+}
+function startGps(){
+  gpsUserEnabled=true;
+  if(gpsWatchId!==null)return;
+  if(!navigator.geolocation){setStatus('GPS非対応');return}
+  gpsLost=false;
+  setStatus('GPS取得中…');
+  gpsWatchId=navigator.geolocation.watchPosition(handleGpsPosition,e=>{
+    if(e.code===1){setStatus('GPSエラー: 位置情報の許可が必要です');return}
+    markGpsLost();
+  },{enableHighAccuracy:true,maximumAge:1000,timeout:10000});
+}
+function stopGps(){
+  gpsUserEnabled=false;
+  if(gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null}
+  gpsActive=false;gpsLast=null;gpsLost=false;
+  setStatus('GPS OFF');
+}
+function syncPdfStepModal(){ $('pdfStepModalValue').textContent=`${pdfStepRate.toFixed(1)}%`; const e=$('portraitPdfStepCorrectionValue'); if(e)e.textContent=`${portraitPdfStepCorrection.toFixed(1)}%`; }
+function openPdfStepModal(){ if(!isFallbackPdf())return; syncPdfStepModal(); const m=$('pdfStepModal'); m.classList.add('open'); m.setAttribute('aria-hidden','false'); }
+function closePdfStepModal(){ const m=$('pdfStepModal'); m.classList.remove('open'); m.setAttribute('aria-hidden','true'); }
+function adjustPdfStep(delta){ pdfStepRate=Math.round(clamp(pdfStepRate+delta,20,200)*10)/10; syncPdfStepModal(); }
+function adjustPortraitPdfStepCorrection(delta){ portraitPdfStepCorrection=Math.round(clamp(portraitPdfStepCorrection+delta,80,110)*10)/10; syncPdfStepModal(); }
+function openPdfStepInputModal(){ if(!isFallbackPdf())return; const m=$('pdfStepInputModal'); const input=$('pdfStepInput'); input.value=pdfStepRate.toFixed(1); m.classList.add('open'); m.setAttribute('aria-hidden','false'); requestAnimationFrame(()=>{input.focus();input.select()}); }
+function closePdfStepInputModal(){ const m=$('pdfStepInputModal'); m.classList.remove('open'); m.setAttribute('aria-hidden','true'); }
+function applyPdfStepInput(){ const input=$('pdfStepInput'); const raw=String(input.value).trim(); if(raw===''){input.focus();return false} const value=Number(raw); if(!Number.isFinite(value)){input.focus();return false} pdfStepRate=Math.round(clamp(value,20,200)*10)/10; syncPdfStepModal(); closePdfStepInputModal(); return true; }
+function pdfStepHoldDelta(elapsedMs){
+  if(elapsedMs<1500)return 0.1;
+  if(elapsedMs<3000)return 0.2;
+  if(elapsedMs<5000)return 0.5;
+  if(elapsedMs<8000)return 1.0;
+  return 2.0;
+}
+function bindPdfStepHoldButton(id,direction){
+  const el=$(id);let timer=null,interval=null,holding=false,suppress=false,holdStarted=0;
+  const stop=()=>{clearTimeout(timer);clearInterval(interval);timer=null;interval=null;holdStarted=0};
+  const step=()=>adjustPdfStep(direction*pdfStepHoldDelta(performance.now()-holdStarted));
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+  el.addEventListener('pointerdown',e=>{e.preventDefault();stop();holding=true;suppress=false;holdStarted=performance.now();try{el.setPointerCapture?.(e.pointerId)}catch(err){};timer=setTimeout(()=>{if(!holding)return;suppress=true;step();interval=setInterval(step,100)},450)});
+  el.addEventListener('pointerup',e=>{e.preventDefault();if(holding&&suppress)e.stopPropagation();stop();holding=false});
+  el.addEventListener('pointercancel',()=>{stop();holding=false;suppress=false});
+  el.addEventListener('lostpointercapture',()=>{if(holding){stop();holding=false;suppress=false}});
+  el.onclick=e=>{e.preventDefault();if(suppress){suppress=false;return}adjustPdfStep(direction*0.1)};
+}
+bindPdfStepHoldButton('pdfStepModalMinus',-1);bindPdfStepHoldButton('pdfStepModalPlus',1);
+function bindPortraitPdfStepCorrectionHoldButton(id,direction){
+  const el=$(id);let timer=null,interval=null,holding=false,suppress=false,holdStarted=0;
+  const stop=()=>{clearTimeout(timer);clearInterval(interval);timer=null;interval=null;holdStarted=0};
+  const step=()=>adjustPortraitPdfStepCorrection(direction*pdfStepHoldDelta(performance.now()-holdStarted));
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+  el.addEventListener('pointerdown',e=>{e.preventDefault();stop();holding=true;suppress=false;holdStarted=performance.now();try{el.setPointerCapture?.(e.pointerId)}catch(err){};timer=setTimeout(()=>{if(!holding)return;suppress=true;step();interval=setInterval(step,100)},450)});
+  el.addEventListener('pointerup',e=>{e.preventDefault();if(holding&&suppress)e.stopPropagation();stop();holding=false});
+  el.addEventListener('pointercancel',()=>{stop();holding=false;suppress=false});
+  el.addEventListener('lostpointercapture',()=>{if(holding){stop();holding=false;suppress=false}});
+  el.onclick=e=>{e.preventDefault();if(suppress){suppress=false;return}adjustPortraitPdfStepCorrection(direction*0.1)};
+}
+bindPortraitPdfStepCorrectionHoldButton('portraitPdfStepCorrectionMinus',-1);bindPortraitPdfStepCorrectionHoldButton('portraitPdfStepCorrectionPlus',1);
+let pdfStepValueHoldTimer=null,pdfStepValueHolding=false,pdfStepValueSuppressClick=false;
+const pdfStepValueEl=$('pdfStepModalValue');
+pdfStepValueEl.addEventListener('contextmenu',e=>e.preventDefault());
+pdfStepValueEl.addEventListener('pointerdown',e=>{if(!isFallbackPdf())return;e.preventDefault();clearTimeout(pdfStepValueHoldTimer);pdfStepValueHolding=true;pdfStepValueSuppressClick=false;try{pdfStepValueEl.setPointerCapture?.(e.pointerId)}catch(err){};pdfStepValueHoldTimer=setTimeout(()=>{if(!pdfStepValueHolding)return;pdfStepValueSuppressClick=true;openPdfStepInputModal()},700)});
+pdfStepValueEl.addEventListener('pointerup',e=>{if(!isFallbackPdf())return;e.preventDefault();clearTimeout(pdfStepValueHoldTimer);if(pdfStepValueSuppressClick)e.stopPropagation();pdfStepValueHolding=false});
+pdfStepValueEl.addEventListener('pointercancel',()=>{clearTimeout(pdfStepValueHoldTimer);pdfStepValueHolding=false;pdfStepValueSuppressClick=false});
+pdfStepValueEl.addEventListener('lostpointercapture',()=>{clearTimeout(pdfStepValueHoldTimer);pdfStepValueHolding=false});
+pdfStepValueEl.onclick=e=>{e.preventDefault();if(pdfStepValueSuppressClick){pdfStepValueSuppressClick=false;return}};
+$('pdfStepClose').onclick=closePdfStepModal;
+$('pdfStepInputApply').onclick=applyPdfStepInput;
+$('pdfStepInputCancel').onclick=closePdfStepInputModal;
+$('pdfStepInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applyPdfStepInput()}else if(e.key==='Escape'){e.preventDefault();closePdfStepInputModal()}});
+$('pdfStepInputModal').addEventListener('click',e=>{if(e.target.id==='pdfStepInputModal')closePdfStepInputModal()});
+$('pdfStepModal').addEventListener('click',e=>{if(e.target.id==='pdfStepModal')closePdfStepModal();});
+function syncGpsCorrectionModal(){ $('gpsCorrModalValue').textContent=`${gpsCorrectionRate.toFixed(1)}%`; }
+function openGpsCorrectionModal(){ syncGpsCorrectionModal(); const m=$('gpsCorrModal'); m.classList.add('open'); m.setAttribute('aria-hidden','false'); }
+function closeGpsCorrectionModal(){ const m=$('gpsCorrModal'); m.classList.remove('open'); m.setAttribute('aria-hidden','true'); }
+function bindGpsCorrectionHoldButton(id,delta){
+  const el=$(id);
+  let holdTimer=null,repeatTimer=null,holding=false,ignoreClick=false,holdStartedAt=0;
+  const stop=()=>{
+    clearTimeout(holdTimer);
+    clearInterval(repeatTimer);
+    holdTimer=null; repeatTimer=null; holding=false;
+  };
+  const step=()=>{
+    adjustGpsCorrection(delta);
+    syncGpsCorrectionModal();
+  };
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+  el.addEventListener('pointerdown',e=>{
+    e.preventDefault();
+    stop();
+    holding=true; ignoreClick=false; holdStartedAt=performance.now();
+    try{el.setPointerCapture?.(e.pointerId)}catch(err){}
+    holdTimer=setTimeout(()=>{
+      if(!holding)return;
+      ignoreClick=true;
+      step();
+      repeatTimer=setInterval(()=>{
+        const heldMs=performance.now()-holdStartedAt;
+        step();
+        if(heldMs>=1500 && repeatTimer){
+          clearInterval(repeatTimer);
+          repeatTimer=setInterval(step,60);
+        }
+      },100);
+    },450);
+  });
+  el.addEventListener('pointerup',e=>{
+    e.preventDefault();
+    if(holding && !ignoreClick) step();
+    stop();
+  });
+  el.addEventListener('pointercancel',stop);
+  el.addEventListener('lostpointercapture',()=>{
+    if(holding){
+      if(!ignoreClick) step();
+      stop();
+    }
+  });
+  el.onclick=e=>{
+    if(ignoreClick){e.preventDefault();ignoreClick=false;}
+  };
+}
+bindGpsCorrectionHoldButton('gpsCorrModalMinus',-0.1);
+bindGpsCorrectionHoldButton('gpsCorrModalPlus',0.1);
+$('gpsCorrClose').onclick=closeGpsCorrectionModal;
+$('gpsCorrModal').addEventListener('click',e=>{if(e.target.id==='gpsCorrModal')closeGpsCorrectionModal()});
+let gpsHoldTimer=null,gpsHoldTriggered=false,gpsSuppressClick=false;
+function toggleGpsFromButton(){
+  if(gpsWatchId!==null)stopGps();
+  else startGps();
+}
+$('gpsBtn').addEventListener('contextmenu',e=>e.preventDefault());
+$('gpsBtn').addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  gpsHoldTriggered=false;
+  gpsSuppressClick=false;
+  clearTimeout(gpsHoldTimer);
+  try{$('gpsBtn').setPointerCapture?.(e.pointerId)}catch(err){}
+  gpsHoldTimer=setTimeout(()=>{gpsHoldTriggered=true;gpsSuppressClick=true;openGpsCorrectionModal()},700);
+});
+$('gpsBtn').addEventListener('pointerup',e=>{
+  e.preventDefault();
+  clearTimeout(gpsHoldTimer);
+  if(gpsHoldTriggered){
+    e.stopPropagation();
+    return;
+  }
+  // Handle a short touch/pointer press here. Some iOS Safari/WebKit
+  // versions do not dispatch the compatibility click after pointer
+  // handlers call preventDefault().
+  gpsSuppressClick=true;
+  toggleGpsFromButton();
+});
+$('gpsBtn').addEventListener('pointercancel',()=>{clearTimeout(gpsHoldTimer);gpsHoldTriggered=false;gpsSuppressClick=false});
+$('gpsBtn').onclick=()=>{
+  if(gpsSuppressClick){gpsSuppressClick=false;gpsHoldTriggered=false;return}
+  // Keep keyboard and assistive-technology click activation working.
+  toggleGpsFromButton();
+};
+
+let compassOn=false;
+let compassHandler=null;
+function screenAngle(){
+  const w=Number(window.orientation);
+  if(w===90||w===-90||w===0||w===180) return w;
+  const a=Number(screen.orientation?.angle);
+  if(a===90) return 90;
+  if(a===270) return -90;
+  if(a===180) return 180;
+  return 0;
+}
+function normalizeHeading(h){return (h%360+360)%360}
+$('compassBtn').onclick=async()=>{
+  try{
+    if(typeof DeviceOrientationEvent==='undefined'){setStatus('コンパス非対応');return}
+    if(typeof DeviceOrientationEvent.requestPermission==='function'){
+      const r=await DeviceOrientationEvent.requestPermission();
+      if(r!=='granted'){setStatus('コンパス許可が必要');return}
+    }
+    if(compassOn)return;
+    compassOn=true;
+    compassHandler=e=>{
+      let h=null;
+      if(typeof e.webkitCompassHeading==='number' && e.webkitCompassHeading>=0){
+        // iPhone Safari: webkitCompassHeading is magnetic heading.
+        // Convert the device's portrait reference to the current screen top.
+        h=normalizeHeading(e.webkitCompassHeading + screenAngle());
+      }else if(typeof e.alpha==='number'){
+        // Non-iOS fallback. alpha is clockwise around the device Z axis.
+        h=normalizeHeading(360-e.alpha-screenAngle());
+      }
+      if(h!=null){
+        const acc=(typeof e.webkitCompassAccuracy==='number'&&e.webkitCompassAccuracy>=0)?Math.round(e.webkitCompassAccuracy):null;
+        setStatus('CAP '+Math.round(h)+'°'+(acc!=null?' ±'+acc+'°':''));
+      }
+    };
+    window.addEventListener('deviceorientation',compassHandler,{passive:true});
+    setStatus('CAP ON');
+  }catch(err){setStatus('CAP開始失敗')}
+};
+window.addEventListener('orientationchange',()=>{if(compassOn)setStatus('CAP ON')});
+const stage=$('stage');
+// PDF tap navigation is deliberately isolated from the existing gesture code.
+// A tap is recognized only when the pointer barely moves; swipes and pinches
+// therefore remain ordinary PDF navigation. A short delay also lets a second
+// tap arrive first, preserving the existing double-tap zoom behavior.
+let pdfTapTimer=null,pdfTapCandidate=null,pdfLastTapTime=0,pdfLastTapX=0,pdfLastTapY=0,pdfTapIsDouble=false;
+function cancelPdfTapTimer(){if(pdfTapTimer){clearTimeout(pdfTapTimer);pdfTapTimer=null}}
+function schedulePdfTap(x,y){
+  if(!isFallbackPdf())return;
+  const now=performance.now();
+  const isDouble=(now-pdfLastTapTime<300&&Math.hypot(x-pdfLastTapX,y-pdfLastTapY)<28);
+  if(isDouble){cancelPdfTapTimer();pdfTapIsDouble=true;pdfLastTapTime=0;return}
+  pdfLastTapTime=now;pdfLastTapX=x;pdfLastTapY=y;pdfTapIsDouble=false;
+  cancelPdfTapTimer();
+  pdfTapTimer=setTimeout(()=>{
+    pdfTapTimer=null;
+    if(pdfTapIsDouble||!isFallbackPdf())return;
+    const rect=stage.getBoundingClientRect();
+    const localY=y-rect.top;
+    const direction=localY<rect.height/2?-1:1;
+    pdfMoveDisplayUnit(direction);
+    pdfLastTapTime=0;
+  },320);
+}
+stage.addEventListener('pointerdown',e=>{
+  if(e.target.closest('button'))return;
+  if(isFallbackPdf()&&pointers.size===0){
+    const now=performance.now();
+    if(now-pdfLastTapTime<300&&Math.hypot(e.clientX-pdfLastTapX,e.clientY-pdfLastTapY)<28){
+      cancelPdfTapTimer();pdfTapIsDouble=true;pdfLastTapTime=0;
+    }else{
+      pdfTapIsDouble=false;
+    }
+    pdfTapCandidate={pointerId:e.pointerId,x:e.clientX,y:e.clientY,moved:false};
+  }else if(isFallbackPdf()){
+    cancelPdfTapTimer();pdfTapCandidate=null;pdfTapIsDouble=false;
+  }
+  stage.setPointerCapture?.(e.pointerId);
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY});
+  gestureMoved=false;
+  if(pointers.size===1){stage._lastX=e.clientX;stage._lastY=e.clientY}
+});
+stage.addEventListener('pointermove',e=>{
+  const prev=pointers.get(e.pointerId); if(!prev)return;
+  const item={...prev,x:e.clientX,y:e.clientY}; pointers.set(e.pointerId,item); gestureMoved=true;
+  if(pdfTapCandidate&&pdfTapCandidate.pointerId===e.pointerId&&Math.hypot(e.clientX-pdfTapCandidate.x,e.clientY-pdfTapCandidate.y)>8){
+    pdfTapCandidate.moved=true;cancelPdfTapTimer();
+  }
+  if(pointers.size===1){
+    // Fallback PDFs always retain normal free panning by swipe.
+    // NEXT / BACK buttons are the dedicated one-step controls.
+    panX+=e.clientX-stage._lastX;panY+=e.clientY-stage._lastY;stage._lastX=e.clientX;stage._lastY=e.clientY;applyPan();rememberPdfPan()
+  }else if(pointers.size===2){
+    const a=[...pointers.values()];const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+    if(!pinchStartDist){pinchStartDist=d;pinchStartZoom=zoom}
+    setZoom(pinchStartZoom*d/pinchStartDist,(a[0].x+a[1].x)/2,(a[0].y+a[1].y)/2)
+  }
+});
+function end(e){
+  const candidate=pdfTapCandidate&&pdfTapCandidate.pointerId===e.pointerId?pdfTapCandidate:null;
+  if(candidate&&!candidate.moved&&pointers.size===1&&!pdfTapIsDouble&&isFallbackPdf())schedulePdfTap(e.clientX,e.clientY);
+  if(candidate)pdfTapCandidate=null;
+  pointers.delete(e.pointerId);if(pointers.size<2)pinchStartDist=0
+}
+function cancelEnd(e){cancelPdfTapTimer();pdfTapCandidate=null;pdfTapIsDouble=false;pointers.delete(e.pointerId);if(pointers.size<2)pinchStartDist=0}
+stage.addEventListener('pointerup',end);stage.addEventListener('pointercancel',cancelEnd);
+stage.addEventListener('wheel',e=>{e.preventDefault();setZoom(zoom*(e.deltaY<0?1.15:.87),e.clientX,e.clientY)},{passive:false});
+stage.addEventListener('dblclick',e=>{cancelPdfTapTimer();pdfTapIsDouble=false;pdfLastTapTime=0;setZoom(zoom>1?1:2,e.clientX,e.clientY)});
+/* v0.8.34: portrait PDF-reading initial position is forced to the first page; HUD/PDF boundary remains fixed. */
+/* v0.8.18 isolated portrait view ---------------------------------------- */
+let portraitRallyBuildToken=0;
+let portraitRallyBuiltSignature='';
+let portraitRallyBuildInProgress=false;
+let portraitRallyReady=false;
+let portraitRallyLastWidth=0;
+let portraitFallbackBuildToken=0,portraitFallbackBuiltSignature='',portraitFallbackBuildInProgress=false,portraitFallbackReady=false;
+let portraitFallbackKomaStepPx=0;
+
+function isPortraitRally(){
+  return window.matchMedia && window.matchMedia('(orientation: portrait)').matches && (RALLY_FORMAT==='A5'||isFallbackPdf());
+}
+function isPortraitFallback(){
+  return window.matchMedia && window.matchMedia('(orientation: portrait)').matches && isFallbackPdf();
+}
+function isPortraitA5(){
+  return RALLY_FORMAT==='A5' && window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
+}
+function portraitRallyEls(){
+  return {
+    view:$('portraitRallyView'),
+    scroll:$('portraitRallyScroll'),
+    stack:$('portraitRallyStack'),
+    loading:$('portraitRallyLoading')
+  };
+}
+function syncPortraitRallyHud(totalOverride=null){
+  const t=totalOverride==null?getTotalKm():totalOverride;
+  const speed=Math.round(lastTs?.speed||0);
+  const rbNo=Number(ROUTE[rb]?.no||1);
+  const te=$('portraitTotal'),se=$('portraitSpeed'),re=$('portraitRb');
+  if(te)te.textContent=fmtKm(t);
+  if(se)se.textContent=String(speed);
+  if(re)re.textContent=String(rbNo);
+}
+function hidePortraitRallyView(){
+  const e=portraitRallyEls();
+  if(!e.view)return;
+  e.view.classList.remove('active');
+  e.view.setAttribute('aria-hidden','true');
+  document.body.classList.remove('portraitPdfMode');
+  portraitRallyReady=false;
+}
+function showPortraitRallyView(){
+  const e=portraitRallyEls();
+  if(!e.view)return;
+  const fallback=isPortraitFallback();
+  e.view.classList.toggle('fallbackMode',fallback);
+  document.body.classList.toggle('portraitPdfMode',fallback);
+  e.view.classList.add('active');
+  e.view.setAttribute('aria-hidden','false');
+  portraitRallyReady=true;
+  syncPortraitRallyHud();
+}
+function fitPortraitFallbackFirstPageToBottom(){
+  if(!isPortraitFallback()||!portraitFallbackReady)return;
+  const e=portraitRallyEls();
+  const first=e.stack?.querySelector('.portraitRallyPage');
+  if(!e.scroll||!e.stack||!first)return;
+  // The PDF viewport itself begins at the exact lower edge of the TOTAL/SPEED
+  // HUD. The PDF must never occupy the HUD area, even when START is pressed.
+  const hud=e.view?.querySelector('.portraitRallyHud');
+  if(hud){
+    const vr=e.view.getBoundingClientRect(),hr=hud.getBoundingClientRect();
+    e.scroll.style.top=Math.max(0,Math.ceil(hr.bottom-vr.top))+'px';
+    e.scroll.style.bottom='0px';
+  }
+  const viewportH=e.scroll.clientHeight||0;
+  const pageH=first.getBoundingClientRect().height||0;
+  if(viewportH<=0||pageH<=0)return;
+  // Keep the PDF at its existing full width/scale. Only move the whole stack
+  // downward so the first page bottom meets the bottom edge of the PDF viewport.
+  const topPad=Math.max(0,Math.round(viewportH-pageH));
+  e.stack.style.paddingTop=topPad+'px';
+  e.stack.style.paddingBottom='0px';
+  // Do not reset scrollTop here. This helper is also called during viewport
+  // refreshes (including resize/wake-lock related changes) while the rider is
+  // reading mid-roadbook. Initial PDF construction explicitly sets scrollTop=0
+  // at its call site; routine layout fitting must preserve the current position.
+}
+function portraitRallySignature(width){
+  return `${RALLY_FORMAT}|${pdf?.numPages||0}|${ROUTE_META?.roadbook_pages||0}|${Math.round(width)}`;
+}
+async function buildPortraitRallyView(){
+  if(!isPortraitA5()||!pdf)return false;
+  const e=portraitRallyEls();
+  if(!e.view||!e.scroll||!e.stack)return false;
+  const width=Math.max(240,Math.floor(e.scroll.clientWidth||$('stage')?.clientWidth||0));
+  if(width<120){requestAnimationFrame(buildPortraitRallyView);return false;}
+  const signature=portraitRallySignature(width);
+  if(portraitRallyReady&&portraitRallyBuiltSignature===signature){schedulePortraitRallyFollow();return true;}
+  if(portraitRallyBuildInProgress)return false;
+
+  const token=++portraitRallyBuildToken;
+  portraitRallyBuildInProgress=true;
+  e.loading.classList.add('show');
+  e.stack.replaceChildren();
+  portraitRallyReady=false;
+
+  try{
+    const pageCount=Math.max(1,Number(ROUTE_META?.roadbook_pages||0));
+    const dprSafe=Math.min(window.devicePixelRatio||1,1.5);
+    for(let i=0;i<pageCount;i++){
+      if(token!==portraitRallyBuildToken)throw new Error('portrait build superseded');
+      const pdfPageNo=i+2;
+      if(pdfPageNo>pdf.numPages)break;
+      const pg=await pdf.getPage(pdfPageNo);
+      const base=pg.getViewport({scale:1,rotation:pg.rotate||0});
+      const cssScale=width/base.width;
+      const vp=pg.getViewport({scale:cssScale,rotation:pg.rotate||0});
+      const canvas=document.createElement('canvas');
+      canvas.className='portraitRallyCanvas';
+      canvas.width=Math.max(1,Math.ceil(vp.width*dprSafe));
+      canvas.height=Math.max(1,Math.ceil(vp.height*dprSafe));
+      canvas.style.width='100%';
+      canvas.style.height='auto';
+      const ctx=canvas.getContext('2d',{alpha:false});
+      ctx.setTransform(dprSafe,0,0,dprSafe,0,0);
+      await pg.render({canvasContext:ctx,viewport:vp}).promise;
+      const pageEl=document.createElement('div');
+      pageEl.className='portraitRallyPage';
+      pageEl.dataset.pdfPage=String(pdfPageNo);
+      pageEl.dataset.routePage=String(i+1);
+      pageEl.appendChild(canvas);
+      e.stack.appendChild(pageEl);
+      // Yield between pages so Safari/iPhone can keep touch input and UI responsive.
+      await new Promise(resolve=>requestAnimationFrame(resolve));
+    }
+
+    if(token!==portraitRallyBuildToken)throw new Error('portrait build superseded');
+    portraitRallyBuiltSignature=signature;
+    portraitRallyLastWidth=width;
+    portraitRallyReady=true;
+    showPortraitRallyView();
+    e.loading.classList.remove('show');
+    requestAnimationFrame(()=>schedulePortraitRallyFollow(false));
+    return true;
+  }catch(err){
+    if(token===portraitRallyBuildToken)console.warn('A5 portrait RALLY VIEW build skipped:',err);
+    e.loading.classList.remove('show');
+    hidePortraitRallyView();
+    return false;
+  }finally{
+    if(token===portraitRallyBuildToken)portraitRallyBuildInProgress=false;
+  }
+}
+function portraitFallbackSignature(width){
+  return `FALLBACK|${RALLY_FORMAT}|${pdf?.numPages||0}|${pdfViewLayout}|${pdfViewPages.length}|${Math.round(width)}`;
+}
+async function detectPortraitFallbackKomaStep(page,width){
+  try{
+    const base=page.getViewport({scale:1,rotation:page.rotate||0});
+    const tc=await page.getTextContent({normalizeWhitespace:false,disableCombineTextItems:false});
+    const items=tc.items.map(x=>a5ItemBox(x,base.height));
+    const nums=a5Nums(items);
+    const rb=nums.filter(x=>x.x<50&&A5_INT_RE.test(x.text)&&x.y>90);
+    rb.sort((a,b)=>a.y-b.y);
+    if(rb.length<4)return 0;
+    const centers=[];
+    for(const x of rb){
+      if(!centers.length||Math.abs(x.y-centers[centers.length-1])>18)centers.push(x.y);
+    }
+    if(centers.length<4)return 0;
+    const diffs=[];
+    for(let i=1;i<Math.min(7,centers.length);i++){
+      const d=centers[i]-centers[i-1];
+      if(d>20&&d<300)diffs.push(d);
+    }
+    if(!diffs.length)return 0;
+    diffs.sort((a,b)=>a-b);
+    const med=diffs[Math.floor(diffs.length/2)];
+    const cssScale=width/base.width;
+    return med*cssScale;
+  }catch(err){
+    return 0;
+  }
+}
+async function buildPortraitFallbackView(){
+  if(!isPortraitFallback()||!pdf)return false;
+  const e=portraitRallyEls();
+  if(!e.view||!e.scroll||!e.stack)return false;
+  const width=Math.max(240,Math.floor(e.scroll.clientWidth||$('stage')?.clientWidth||0));
+  if(width<120){requestAnimationFrame(buildPortraitFallbackView);return false;}
+  const signature=portraitFallbackSignature(width);
+  if(portraitFallbackReady&&portraitFallbackBuiltSignature===signature){
+    // Re-showing an already-built PDF after app/background transitions must
+    // never jump back to the first page.
+    showPortraitRallyView();
+    fitPortraitFallbackFirstPageToBottom();
+    return true;
+  }
+  if(portraitFallbackBuildInProgress)return false;
+  // Keep the current scroll offset if a viewport/signature change requires
+  // rebuilding the rendered PDF pages. On the first build, use the value
+  // restored from the saved session (if any).
+  const hadPortraitFallback=portraitFallbackReady;
+  const keepScrollTop=hadPortraitFallback
+    ? Number(e.scroll.scrollTop)||0
+    : Math.max(0,Number(restoredPortraitScrollTop)||0);
+  const token=++portraitFallbackBuildToken; portraitFallbackBuildInProgress=true;
+  e.loading.classList.add('show'); e.stack.replaceChildren(); portraitRallyReady=false;
+  try{
+    const count=Math.max(1,Number(logicalCount)||Number(pdf.numPages)||1);
+    portraitFallbackKomaStepPx=0;
+    if(pdf?.numPages){
+      const probe=await pdf.getPage(1);
+      const base=probe.getViewport({scale:1,rotation:probe.rotate||0});
+      // PDFVIEW is intentionally a display-only mode. This probe uses only
+      // page geometry/text positions to estimate row spacing; it does not
+      // extract distance or RB values into RallyCon state. Limit auto-detection
+      // to A5-sized pages so ordinary long/large PDFs keep the generic fallback.
+      const looksA5Sized=base.width<=500&&base.height<=700&&base.height>base.width*1.15;
+      if(looksA5Sized)portraitFallbackKomaStepPx=await detectPortraitFallbackKomaStep(probe,width);
+    }
+    const dprSafe=Math.min(window.devicePixelRatio||1,1.25);
+    for(let i=1;i<=count;i++){
+      if(token!==portraitFallbackBuildToken)throw new Error('portrait fallback build superseded');
+      const m=mapping(i),pg=await pdf.getPage(m.pdf);
+      const base=pg.getViewport({scale:1,rotation:pg.rotate||0});
+      const vp=pg.getViewport({scale:width/base.width,rotation:pg.rotate||0});
+      const off=document.createElement('canvas');
+      off.width=Math.max(1,Math.ceil(vp.width*dprSafe)); off.height=Math.max(1,Math.ceil(vp.height*dprSafe));
+      const octx=off.getContext('2d',{alpha:false}); octx.setTransform(dprSafe,0,0,dprSafe,0,0);
+      await pg.render({canvasContext:octx,viewport:vp}).promise;
+      const canvas=document.createElement('canvas'); canvas.className='portraitRallyCanvas'; canvas.style.width='100%'; canvas.style.height='auto';
+      if(pdfViewLayout==='twoUp'&&m.side!=='full'){
+        const halfW=Math.floor(off.width/2); canvas.width=Math.max(1,halfW); canvas.height=off.height;
+        canvas.getContext('2d',{alpha:false}).drawImage(off,m.side==='left'?0:(off.width-halfW),0,halfW,off.height,0,0,halfW,off.height);
+      }else{
+        canvas.width=off.width; canvas.height=off.height; canvas.getContext('2d',{alpha:false}).drawImage(off,0,0);
+      }
+      off.width=1; off.height=1;
+      const pageEl=document.createElement('div'); pageEl.className='portraitRallyPage'; pageEl.dataset.logicalPage=String(i); pageEl.dataset.pdfPage=String(m.pdf); pageEl.appendChild(canvas); e.stack.appendChild(pageEl);
+      await new Promise(resolve=>requestAnimationFrame(resolve));
+    }
+    if(token!==portraitFallbackBuildToken)throw new Error('portrait fallback build superseded');
+    portraitFallbackBuiltSignature=signature; portraitFallbackReady=true; showPortraitRallyView(); e.loading.classList.remove('show');
+    requestAnimationFrame(()=>{
+      fitPortraitFallbackFirstPageToBottom();
+      const max=Math.max(0,e.scroll.scrollHeight-e.scroll.clientHeight);
+      const target=Math.max(0,Math.min(max,keepScrollTop));
+      e.scroll.scrollTop=target;
+      restoredPortraitScrollTop=target;
+    }); return true;
+  }catch(err){
+    if(token===portraitFallbackBuildToken)console.warn('Fallback portrait RALLY VIEW build skipped:',err);
+    e.loading.classList.remove('show'); if(token===portraitFallbackBuildToken)portraitFallbackReady=false; return false;
+  }finally{if(token===portraitFallbackBuildToken)portraitFallbackBuildInProgress=false;}
+}
+function portraitFallbackScrollStep(direction){
+  if(!isPortraitFallback()||!portraitFallbackReady)return false;
+  const e=portraitRallyEls(),st=e.scroll,stack=e.stack;
+  if(!st||!st.clientHeight||!stack)return false;
+
+  // v0.8.23: keep the existing 20.0-200.0% display setting unchanged,
+  // but add an independent portrait-only correction multiplier. This lets
+  // 20.0% produce a slightly smaller real-world step when an exact one-koma
+  // fit is needed, without introducing a new setting below 20.0%.
+  const refPage=stack.querySelector('.portraitRallyPage');
+  const pageHeight=refPage?.getBoundingClientRect().height||0;
+  const oneKoma=Math.max(1,portraitFallbackKomaStepPx||pageHeight/7.5);
+  const step=oneKoma*(pdfStepRate/20)*(portraitPdfStepCorrection/100);
+
+  const maxTop=Math.max(0,st.scrollHeight-st.clientHeight);
+  const before=st.scrollTop;
+  const nextTop=Math.max(0,Math.min(maxTop,before+direction*step));
+  try{st.scrollTo({top:nextTop,behavior:'auto'})}catch(err){st.scrollTop=nextTop}
+  return Math.abs(nextTop-before)>0.1;
+}
+function syncPortraitFallbackPosition(smooth=true){
+  if(!isPortraitFallback()||!portraitFallbackReady)return;
+  const e=portraitRallyEls(),pageEl=e.stack?.querySelector('[data-logical-page="'+logicalPage+'"]'); if(!pageEl)return;
+  const target=pageEl.offsetTop-e.scroll.clientHeight*0.08, maxTop=Math.max(0,e.stack.scrollHeight-e.scroll.clientHeight), nextTop=Math.max(0,Math.min(maxTop,target));
+  try{e.scroll.scrollTo({top:nextTop,behavior:smooth?'smooth':'auto'})}catch(err){e.scroll.scrollTop=nextTop}
+}
+function syncPortraitRallyPosition(smooth=true){
+  if(!isPortraitA5()||!portraitRallyReady)return;
+  const e=portraitRallyEls();
+  const pageIndex=Math.floor(Math.max(0,rb)/6);
+  const pageEl=e.stack?.children?.[pageIndex];
+  const route=ROUTE[rb];
+  if(!pageEl||!route)return;
+  const canvas=pageEl.querySelector('canvas');
+  if(!canvas)return;
+  const ratio=Number(route.rowCenterRatio);
+  const fallback=(76.08+((Number(route.row||1)-0.5)*(576.96-76.08)/6))/595.32;
+  const rowRatio=Number.isFinite(ratio)&&ratio>0&&ratio<1?ratio:fallback;
+  const rowY=pageEl.offsetTop + canvas.getBoundingClientRect().height*rowRatio;
+  const target=e.scroll.clientHeight*0.48;
+  const maxTop=Math.max(0,e.stack.scrollHeight-e.scroll.clientHeight);
+  const nextTop=Math.max(0,Math.min(maxTop,rowY-target));
+  try{e.scroll.scrollTo({top:nextTop,behavior:smooth?'smooth':'auto'})}catch(err){e.scroll.scrollTop=nextTop}
+}
+function schedulePortraitRallyFollow(smooth=true){
+  if(!isPortraitA5()||!portraitRallyReady)return;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>syncPortraitRallyPosition(smooth)));
+}
+async function refreshPortraitRallyView(force=false){
+  if(isPortraitFallback()&&pdf){
+    const e=portraitRallyEls(); const width=Math.floor(e.scroll?.clientWidth||$('stage')?.clientWidth||0); const signature=portraitFallbackSignature(width);
+    if(!force&&portraitFallbackReady&&portraitFallbackBuiltSignature===signature){showPortraitRallyView();fitPortraitFallbackFirstPageToBottom();return true;}
+    return buildPortraitFallbackView();
+  }
+  if(!isPortraitA5()||!pdf||RALLY_FORMAT!=='A5'){hidePortraitRallyView();return false;}
+  const e=portraitRallyEls(); const width=Math.floor(e.scroll?.clientWidth||$('stage')?.clientWidth||0); const signature=portraitRallySignature(width);
+  if(!force&&portraitRallyReady&&portraitRallyBuiltSignature===signature){schedulePortraitRallyFollow();return true;}
+  return buildPortraitRallyView();
+}
+let portraitRallyResizeTimer=null;
+function schedulePortraitRallyRefresh(){
+  clearTimeout(portraitRallyResizeTimer);
+  portraitRallyResizeTimer=setTimeout(()=>refreshPortraitRallyView(false),120);
+}
+window.addEventListener('orientationchange',()=>setTimeout(()=>refreshPortraitRallyView(true),120));
+window.addEventListener('resize',()=>schedulePortraitRallyRefresh());
+/* --------------------------------------------------------------------- */
+function updateClock(){
+  const d=new Date();
+  $('clockTime').textContent=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+$('gpsCorrValue').textContent=`${gpsCorrectionRate.toFixed(1)}%`;if($('gpsCorrModalValue'))$('gpsCorrModalValue').textContent=`${gpsCorrectionRate.toFixed(1)}%`;if($('pdfStepModalValue'))$('pdfStepModalValue').textContent=`${pdfStepRate.toFixed(1)}%`;if($('portraitPdfStepCorrectionValue'))$('portraitPdfStepCorrectionValue').textContent=`${portraitPdfStepCorrection.toFixed(1)}%`;
+updateClock();
+setInterval(updateClock,1000);
+function recenterTargetAfterLayout(){
+  requestAnimationFrame(()=>requestAnimationFrame(()=>centerTargetInView()));
+}
+setInterval(()=>{
+  const now=performance.now();
+  const ms=elapsedMs+(running&&timerStart?now-timerStart:0);
+  const s=Math.floor(ms/1000);
+  $('time').textContent=new Date(s*1000).toISOString().slice(11,19);
+  if(gpsWatchId!==null&&gpsLast&&stageStarted&&running&&!gpsLost){
+    const age=(now-gpsLast.t)/1000;
+    if(age>=GPS_LOST_TIMEOUT_SEC)markGpsLost();
+  }
+},250);
+window.addEventListener('resize',()=>{if(pdf)renderPage().then(()=>{if(stageStarted)recenterTargetAfterLayout()});schedulePortraitRallyRefresh()});
+function restorePdfViewportState(){
+  const v=portraitRallyEls();
+  if(v?.scroll&&isPortraitFallback()){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const max=Math.max(0,v.scroll.scrollHeight-v.scroll.clientHeight);
+      v.scroll.scrollTop=Math.max(0,Math.min(max,restoredPortraitScrollTop));
+    }));
+  }
+  if(pdf&&!isPortraitFallback()){
+    try{applyPan();}catch(e){}
+  }
+}
+function resumeFromBackground(){
+  if(!running)return;
+
+  // visibilitychange and pageshow can fire for the same return-to-foreground.
+  // Do not issue duplicate location requests within a short interval.
+  const now=performance.now();
+  if(now-lastResumeAt<1500)return;
+  lastResumeAt=now;
+  const token=++resumeSequence;
+
+  resumeFixPending=true;
+  restorePdfViewportState();
+  recenterTargetAfterLayout();
+
+  // The watch remains the primary GPS path.  Mark the signal LOST immediately
+  // so the first valid post-resume fix is treated as a recovery point.
+  if(gpsUserEnabled){
+    markGpsLost();
+    if(gpsWatchId===null)startGps();
+  }
+
+  // Wake Lock is helpful but must never block GPS recovery.
+  requestWakeLock();
+
+  // getCurrentPosition is only a recovery helper.  Safari/WebKit may delay or
+  // never complete this request after backgrounding, so watchPosition must be
+  // allowed to recover independently.
+  if(gpsUserEnabled&&navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      pos=>{
+        if(token!==resumeSequence)return;
+        resumeFixPending=false;
+        handleGpsPosition(pos);
+        restorePdfViewportState();
+        recenterTargetAfterLayout();
+      },
+      ()=>{
+        if(token!==resumeSequence)return;
+        resumeFixPending=false;
+        markGpsLost();
+        restorePdfViewportState();
+        recenterTargetAfterLayout();
+      },
+      {enableHighAccuracy:true,maximumAge:0,timeout:10000}
+    );
+  }else{
+    resumeFixPending=false;
+    restorePdfViewportState();
+    recenterTargetAfterLayout();
+  }
+}
+// Persist the portrait PDF position as the rider scrolls, so iOS can
+// restore it even if the page is suspended or discarded before pagehide.
+let portraitScrollSaveQueued=false;
+const portraitScrollEl=$('portraitRallyScroll');
+if(portraitScrollEl){
+  portraitScrollEl.addEventListener('scroll',()=>{
+    restoredPortraitScrollTop=Math.max(0,Number(portraitScrollEl.scrollTop)||0);
+    if(portraitScrollSaveQueued)return;
+    portraitScrollSaveQueued=true;
+    requestAnimationFrame(()=>{
+      portraitScrollSaveQueued=false;
+      saveSession();
+    });
+  },{passive:true});
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'){
+    hiddenAt=performance.now();
+    saveSession();
+    return;
+  }
+  if(document.visibilityState==='visible'){
+    if(hiddenAt){
+      const hiddenSec=Math.max(0,(performance.now()-hiddenAt)/1000);
+      if(running&&hiddenSec>=1)resumeFixPending=true;
+      hiddenAt=0;
+    }
+    restorePdfViewportState();
+    resumeFromBackground();
+    saveSession();
+  }
+});
+window.addEventListener('pageshow',e=>{
+  restorePdfViewportState();
+  if(running)resumeFromBackground();
+  else if(e.persisted)restorePdfViewportState();
+});
+window.addEventListener('pagehide',saveSession);
+// v0.8.57: restore app-level mode preference; first launch opens the mode chooser.
+const hasAppModePrefs=readAppModePrefs();
+applyAppMode();
+setStatus('PDF NOT LOADED / LOAD PDF');
+display(false);
+if(hasAppModePrefs){if(APP_MODE==='RALLYCON')requestRallyOrientationLock();}
+else openAppModeModal();
+</script></body></html>
