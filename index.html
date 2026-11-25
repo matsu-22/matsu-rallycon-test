@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>Matsu RallyCon v0.8.58 画面方向選択</title>
+<title>Matsu RallyCon v0.8.56 PDFなし起動</title>
 <link rel="manifest" href="manifest.webmanifest">
 <style>
 :root{--bg:#0d1117;--panel:#161b22;--line:#30363d;--text:#f0f6fc;--muted:#8b949e;--accent:#58a6ff;--warn:#f2cc60}
@@ -90,22 +90,9 @@ button{font:inherit;color:inherit;background:#21262d;border:1px solid #484f58;bo
 @media (orientation:portrait){.portraitRallyView.active .portraitRallyStack{padding-bottom:calc(26px + env(safe-area-inset-bottom))}}
 
 .emptyRoadbook{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center;color:#c9d1d9;background:#20262e;z-index:2}.emptyRoadbookTitle{font-size:clamp(22px,3.5vw,34px);font-weight:900;letter-spacing:.04em}.emptyRoadbookText{font-size:clamp(15px,2.2vw,20px);font-weight:800}.emptyRoadbookHint{font-size:clamp(12px,1.6vw,15px);color:#8b949e}
-
-/* v0.8.58: simple RallyCon orientation choice; existing PDF load modes are untouched. */
-.orientationModal{position:fixed;inset:0;z-index:2100;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.82)}
-.orientationModal.open{display:flex}
-.orientationDialog{width:min(420px,92vw);padding:22px;border:1px solid #484f58;border-radius:14px;background:#11161d;box-shadow:0 18px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:14px}
-.orientationTitle{text-align:center;font-size:22px;font-weight:900}
-.orientationHint{text-align:center;color:#8b949e;font-size:12px}
-.orientationChoices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.orientationChoices button{height:58px;background:#263b50;border-color:#3987c9;font-size:16px}
-.orientationCancel{height:38px;background:transparent;color:#8b949e;border-color:#30363d}
-#orientationBtn{height:30px;min-width:42px;padding:0 7px;font-size:10px}
-.top{grid-template-columns:minmax(140px,1fr) minmax(110px,auto) auto auto auto}
-@media (orientation:portrait){.top{grid-template-columns:minmax(0,1fr) auto auto auto}}
 </style></head><body>
 <div id="app">
-<header class="top"><div class="brand">Matsu RallyCon <span class="brandVersion">v0.8.58 画面方向選択</span></div><div class="clock"><span id="clockTime" class="clockTime">--:--</span></div><div id="status" class="status">準備中</div><button id="orientationBtn" title="画面方向">DIR</button><button id="gpsBtn">GPS</button><button id="compassBtn">CAP</button></header>
+<header class="top"><div class="brand">Matsu RallyCon <span class="brandVersion">v0.8.56 PDFなし起動</span></div><div class="clock"><span id="clockTime" class="clockTime">--:--</span></div><div id="status" class="status">準備中</div><button id="gpsBtn">GPS</button><button id="compassBtn">CAP</button></header>
 <main class="main">
 <section class="panel left">
 <div class="card"><div class="label">TOTAL km</div><div id="total" class="value totalValue">0.00</div><div class="corr"><button id="totalMinus">−10m</button><button id="totalZero">0</button><button id="totalPlus">＋10m</button></div></div>
@@ -135,7 +122,6 @@ button{font:inherit;color:inherit;background:#21262d;border:1px solid #484f58;bo
 <div class="nav"><div id="reverseInfo" class="rbbox reverseInfo"><span class="rbnum">REV 戻り距離</span><span id="reverseDistance" class="rbval">−0.00</span></div><button id="autoBtn" class="auto">AUTO: ON</button><button id="reverseBtn" class="reverseBtn">REV</button></div>
 </aside></main>
 <div id="gpsCorrModal" class="gpsCorrModal" aria-hidden="true"><div class="gpsCorrDialog"><div class="gpsCorrTitle">GPS距離補正</div><div id="gpsCorrModalValue" class="gpsCorrModalValue">100.0%</div><div class="gpsCorrModalControls"><button id="gpsCorrModalMinus">−0.1%</button><button id="gpsCorrModalPlus">＋0.1%</button></div><button id="gpsCorrClose" class="gpsCorrClose">閉じる</button></div></div><div id="pdfStepModal" class="pdfStepModal" aria-hidden="true"><div class="pdfStepDialog"><div class="pdfStepTitle">PDFコマ送り量</div><div id="pdfStepModalValue" class="pdfStepValue" title="長押しで数値入力">100.0%</div><div class="pdfStepControls"><button id="pdfStepModalMinus">−0.1%</button><button id="pdfStepModalPlus">＋0.1%</button></div><div class="pdfStepHint">NEXT：次へ　BACK：前へ<br>1回の送り量＝現在の表示エリア高さ × 設定倍率<br>スワイプ：PDFを任意の位置へ自由に移動</div><div class="portraitPdfStepBox"><div class="portraitPdfStepTitle">縦RALLY VIEW 送り補正 <span>(縦画面のPDF表示モードのみ)</span></div><div id="portraitPdfStepCorrectionValue" class="portraitPdfStepValue">100.0%</div><div class="portraitPdfStepControls"><button id="portraitPdfStepCorrectionMinus">−0.1%</button><button id="portraitPdfStepCorrectionPlus">＋0.1%</button></div><div class="portraitPdfStepHint">表示値20.0%のまま、実際の縦送り幅だけ微調整します。<br>80.0～110.0%・0.1%刻み / 長押しで連続調整</div></div><button id="pdfStepClose" class="pdfStepClose">閉じる</button></div></div><div id="pdfStepInputModal" class="pdfStepInputModal" aria-hidden="true"><div class="pdfStepInputDialog"><div class="pdfStepInputTitle">PDFコマ送り量を直接入力</div><input id="pdfStepInput" class="pdfStepInput" type="number" inputmode="decimal" min="20" max="200" step="0.1" autocomplete="off" aria-label="PDFコマ送り量"><div class="pdfStepInputHint">20.0～200.0%・0.1%刻み<br>例：87.3</div><div class="pdfStepInputControls"><button id="pdfStepInputApply">設定</button><button id="pdfStepInputCancel">キャンセル</button></div></div></div><div id="pdfLoadModal" class="pdfLoadModal" aria-hidden="true"><div class="pdfLoadDialog"><div class="pdfLoadTitle">PDF読み込みモード</div><div id="pdfLoadName" class="pdfLoadName"></div><div class="pdfLoadOptions"><button id="pdfLoadAuto">自動判定</button><button id="pdfLoadKoma">コマ練モード</button><button id="pdfLoadView">PDF表示モード</button></div><div class="pdfLoadHint">自動判定：対応形式だけ距離/RBを解析。未知形式はPDF表示。<br>コマ練：対応するコマ練形式として解析。非対応形式は読み込みません。<br>PDF表示：距離/RBを一切解析せず、固定送り＋自由スクロールで表示。</div><button id="pdfLoadCancel" class="pdfLoadCancel">キャンセル</button></div></div><footer class="foot"><button id="loadBtn">LOAD PDF</button><button id="pagePrev">PAGE ‹</button><button id="pageNext">PAGE ›</button><button id="startBtn">START</button><button id="backBtn">BACK</button><button id="nextBtn">NEXT</button></footer>
-<div id="orientationModal" class="orientationModal" aria-hidden="true"><div class="orientationDialog"><div class="orientationTitle">画面方向を選択</div><div class="orientationHint">ラリコン画面の向きを選んでください</div><div class="orientationChoices"><button id="orientationPortrait">縦画面</button><button id="orientationLandscape">横画面</button></div><button id="orientationCancel" class="orientationCancel">キャンセル</button></div></div>
 <input id="pdfFile" class="file" type="file" accept="application/pdf,.pdf">
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -311,8 +297,8 @@ let gpsDistance=0,gpsRawDistance=0,totalZeroBase=0,totalOffset=0,legBase=0,legOf
 let reverseMode=false,reverseDistanceKm=0;
 const AUTO_NEXT_TRIGGER_M=0;
 const SESSION_KEY='matsu-rallycon-session-v0651-a5dev';
-const APP_VERSION='0.8.58-ORIENTATION-SELECT';
-const A5_DEV_LABEL='Matsu RallyCon v0.8.58: Orientation select';
+const APP_VERSION='0.8.59-PDF-NONE';
+const A5_DEV_LABEL='Matsu RallyCon v0.8.59: PDFなし起動';
 const LEGACY_SESSION_VERSIONS=new Set(['0.8.53-KOMAREN-KANTO-A5-HIGHLIGHT','0.8.50-PAGE-LIFECYCLE-DIAGNOSTIC','0.8.51-KOMAREN-KANTO-PDF-REPLACED','0.8.52-KOMAREN-KANTO-TOTAL-FIX','0.6.38','0.6.39','0.6.40','0.6.41','0.6.42','0.6.43','0.6.44','0.6.45','0.6.46','0.6.47','0.6.48','0.6.49','0.7.1','0.7.2-GPS-DEV','0.7.2-GPS-DEV2','0.7.3-LONG-PDF','0.7.5-UNIVERSAL-PDF','0.7.6-UNIVERSAL-PDF','0.7.7-UNIVERSAL-PDF','0.7.8-UNIVERSAL-PDF','0.7.9-UNIVERSAL-PDF','0.8.0-UNIVERSAL-PDF','0.8.1-UNIVERSAL-PDF']);
 let wakeLock=null, suppressSessionSave=false, restoredPortraitScrollTop=0;
 let pointers=new Map(),pinchStartDist=0,pinchStartZoom=1,gestureMoved=false;
@@ -1966,21 +1952,7 @@ window.addEventListener('pageshow',e=>{
   else if(e.persisted)restorePdfViewportState();
 });
 window.addEventListener('pagehide',saveSession);
-// v0.8.58: keep one RallyCon mode; remember only the selected screen orientation.
-const ORIENTATION_PREF_KEY='matsu-rallycon-orientation-v1';
-let rallyOrientation='';
-function readRallyOrientation(){try{const v=localStorage.getItem(ORIENTATION_PREF_KEY);return v==='PORTRAIT'||v==='LANDSCAPE'?v:''}catch(e){return ''}}
-function openOrientationModal(){const m=$('orientationModal');m.classList.add('open');m.setAttribute('aria-hidden','false');$('orientationCancel').style.display=rallyOrientation?'block':'none'}
-function closeOrientationModal(){const m=$('orientationModal');m.classList.remove('open');m.setAttribute('aria-hidden','true')}
-async function applyRallyOrientation(value){rallyOrientation=value;try{localStorage.setItem(ORIENTATION_PREF_KEY,value)}catch(e){}closeOrientationModal();try{if(screen.orientation?.lock)await screen.orientation.lock(value==='PORTRAIT'?'portrait':'landscape')}catch(e){console.info('Orientation lock unavailable; device orientation will control layout.',e?.message||e)}}
-$('orientationBtn').onclick=openOrientationModal;
-$('orientationPortrait').onclick=()=>applyRallyOrientation('PORTRAIT');
-$('orientationLandscape').onclick=()=>applyRallyOrientation('LANDSCAPE');
-$('orientationCancel').onclick=closeOrientationModal;
-rallyOrientation=readRallyOrientation();
-if(rallyOrientation){try{if(screen.orientation?.lock)screen.orientation.lock(rallyOrientation==='PORTRAIT'?'portrait':'landscape').catch(()=>{})}catch(e){}}
-// v0.8.58: no bundled PDF is loaded at startup; the original PDF load-mode dialog remains available.
+// v0.8.56: 起動時はPDFを自動読込せず、ユーザーのPDF選択を待つ。
 setStatus('PDF NOT LOADED / LOAD PDF');
 display(false);
-if(!rallyOrientation)openOrientationModal();
 </script></body></html>
